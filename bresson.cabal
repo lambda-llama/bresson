@@ -52,6 +52,26 @@ Test-suite bresson-tests
                   , test-framework-quickcheck2 == 0.3.*
                   , QuickCheck                 == 2.5.*
 
+Benchmark benchmarks
+  Main-is: Benchmarks.hs
+  Hs-source-dirs:   src, tests, benchmarks
+  Default-language: Haskell2010
+  Type:             exitcode-stdio-1.0
+
+  Build-depends:    base                      == 4.6.*  || == 4.5.*
+                  , bytestring                == 0.10.* || == 0.9.*
+                  , time                      == 1.4.*
+                  , binary                    == 0.5.*
+                  , data-binary-ieee754       == 0.4.*
+                  , word24                    == 1.0.*
+                  , text                      == 0.11.*
+                  , vector                    == 0.10.*
+                  , unordered-containers      == 0.2.*
+                  , random                    == 1.0.*
+
+                  , criterion                 == 0.6.*
+                  , QuickCheck                == 2.5.*
+
 Source-repository head
   Type:             git
   Location:         https://github.com/knsd/bresson

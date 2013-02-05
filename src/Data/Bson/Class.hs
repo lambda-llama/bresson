@@ -3,7 +3,7 @@ module Data.Bson.Class
     , FromBson(..)
     ) where
 
-import Data.Text(Text)
+import Data.Text (Text)
 
 import Data.Bson.Types (BsonValue)
 
