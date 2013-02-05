@@ -68,10 +68,10 @@ Benchmark benchmarks
                   , text                      == 0.11.*
                   , vector                    == 0.10.*
                   , unordered-containers      == 0.2.*
-                  , random                    == 1.0.*
 
                   , criterion                 == 0.6.*
                   , QuickCheck                == 2.5.*
+                  , random                    == 1.0.*
 
 Source-repository head
   Type:             git
