@@ -1,0 +1,23 @@
+#define BSON_DOUBLE 0x01
+#define BSON_STRING 0x02
+#define BSON_DOCUMENT 0x03
+#define BSON_ARRAY 0x04
+#define BSON_BINARY 0x05
+#define BSON_OID 0x07
+#define BSON_BOOLEAN 0x08
+#define BSON_UTC 0x09
+#define BSON_NULL 0x0a
+#define BSON_REGEX 0x0b
+#define BSON_JS 0x0d
+#define BSON_JS_WITH_SCOPE 0x0f
+#define BSON_INT32 0x10
+#define BSON_INT64 0x11
+#define BSON_TIMESTAMP 0x12
+#define BSON_MIN 0xff
+#define BSON_MAX 0x7f
+
+#define BSON_GENERIC_BINARY 0x00
+#define BSON_FUNCTION 0x01
+#define BSON_UUID 0x04
+#define BSON_MD5 0x05
+#define BSON_USER_DEFINED_BINARY 0x80

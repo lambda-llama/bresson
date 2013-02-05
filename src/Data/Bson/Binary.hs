@@ -4,8 +4,11 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TupleSections #-}
+{-# LANGUAGE CPP #-}
 
 module Data.Bson.Binary () where
+
+#include "Bson.h"
 
 import Prelude hiding (length, concat)
 import Control.Applicative ((<$>), (<*>))
@@ -15,14 +18,15 @@ import Data.Binary.Get (Get, runGet, getWord8, getWord16le,
                         getLazyByteString, getByteString, lookAhead)
 import Data.Binary.Put (Put, runPut, putWord8, putWord16le, putWord32le,
                         putWord64le, putLazyByteString, putByteString)
-import Data.Binary.IEEE754 (getFloat64le, putFloat64le)
 import Data.Bits (shiftL, shiftR, (.|.))
 import Data.Time.Clock (UTCTime)
 import Data.Time.Clock.POSIX (posixSecondsToUTCTime, utcTimeToPOSIXSeconds)
+import Text.Printf (printf)
 
 import qualified Data.ByteString as S
 import qualified Data.ByteString.Lazy as L
 
+import Data.Binary.IEEE754 (getFloat64le, putFloat64le)
 import Data.Text (Text)
 import Data.Text.Lazy.Builder.Int (decimal)
 import Data.Word.Word24 (Word24)
@@ -45,25 +49,27 @@ putBsonField key value = do
     putBsonCString key
     payload
   where
-      (tag, payload) = case value of
-        BsonValueDouble a -> (0x01, putFloat64le a)
-        BsonValueString a -> (0x02, putBsonString a)
-        BsonValueDocument a -> (0x03, putBsonDocument a)
-        BsonValueArray a -> (0x04, putBsonArray a)
-        BsonValueBinary a -> (0x05, putBsonBinary a)
-        BsonValueObjectId a -> (0x07, putBsonObjectId a)
-        BsonValueBool False -> (0x08, putWord8 0)
-        BsonValueBool True -> (0x08, putWord8 1)
-        BsonValueUtcTime a -> (0x09, putBsonUtcTime a)
-        BsonValueNull -> (0x0a, return ())
-        BsonValueRegex a b -> (0x0b, putBsonCString a >> putBsonCString b)
-        BsonValueJavascript a -> (0x0d, putBsonCString a)
-        BsonValueJavascriptWithScope a b -> (0x0f, putBsonJsWithScope a b)
-        BsonValueInt32 a -> (0x10, putWord32le $ fromIntegral a)
-        BsonValueInt64 a -> (0x11, putWord64le $ fromIntegral a)
-        BsonValueTimestamp a -> (0x12, putWord64le $ fromIntegral a)
-        BsonValueMin -> (0xff, return ())
-        BsonValueMax -> (0x7f, return ())
+    (tag, payload) = case value of
+        BsonValueDouble a     -> (BSON_DOUBLE, putFloat64le a)
+        BsonValueString a     -> (BSON_STRING, putBsonString a)
+        BsonValueDocument a   -> (BSON_DOCUMENT, putBsonDocument a)
+        BsonValueArray a      -> (BSON_ARRAY, putBsonArray a)
+        BsonValueBinary a     -> (BSON_BINARY, putBsonBinary a)
+        BsonValueObjectId a   -> (BSON_OID, putBsonObjectId a)
+        BsonValueBool False   -> (BSON_BOOLEAN, putWord8 0)
+        BsonValueBool True    -> (BSON_BOOLEAN, putWord8 1)
+        BsonValueUtcTime a    -> (BSON_UTC, putBsonUtcTime a)
+        BsonValueNull         -> (BSON_NULL, return ())
+        BsonValueRegex a b    ->
+            (BSON_REGEX, putBsonCString a >> putBsonCString b)
+        BsonValueJavascript a -> (BSON_JS, putBsonCString a)
+        BsonValueJavascriptWithScope a b ->
+            (BSON_JS_WITH_SCOPE, putBsonJsWithScope a b)
+        BsonValueInt32 a      -> (BSON_INT32, putWord32le $ fromIntegral a)
+        BsonValueInt64 a      -> (BSON_INT64, putWord64le $ fromIntegral a)
+        BsonValueTimestamp a  -> (BSON_TIMESTAMP, putWord64le $ fromIntegral a)
+        BsonValueMin          -> (BSON_MIN, return ())
+        BsonValueMax          -> (BSON_MAX, return ())
 {-# INLINE putBsonField #-}
 
 getBsonField :: Get (BsonLabel, BsonValue)
@@ -71,24 +77,25 @@ getBsonField = do
     tag <- getWord8
     key <- getBsonCString
     value <- case tag of
-        0x01 -> BsonValueDouble <$> getFloat64le
-        0x02 -> BsonValueString <$> getBsonString
-        0x03 -> BsonValueDocument <$> getBsonDocument
-        0x04 -> BsonValueArray <$> getBsonArray
-        0x05 -> BsonValueBinary <$> getBsonBinary
-        0x07 -> BsonValueObjectId <$> getBsonObjectId
-        0x08 -> BsonValueBool <$> getBsonBool
-        0x09 -> BsonValueUtcTime <$> getBsonUtcTime
-        0x0a -> return BsonValueNull
-        0x0b -> BsonValueRegex <$> getBsonCString <*> getBsonCString
-        0x0d -> BsonValueJavascript <$> getBsonCString
-        0x0f -> uncurry BsonValueJavascriptWithScope <$> getBsonJsWithScope
-        0x10 -> BsonValueInt32 . fromIntegral <$> getWord32le
-        0x11 -> BsonValueInt64 . fromIntegral <$> getWord64le
-        0x12 -> BsonValueTimestamp . fromIntegral <$> getWord64le
-        0xff -> return BsonValueMin
-        0x7f -> return BsonValueMax
-        _    -> fail "Invalid bson value"
+        BSON_DOUBLE    -> BsonValueDouble <$> getFloat64le
+        BSON_STRING    -> BsonValueString <$> getBsonString
+        BSON_DOCUMENT  -> BsonValueDocument <$> getBsonDocument
+        BSON_ARRAY     -> BsonValueArray <$> getBsonArray
+        BSON_BINARY    -> BsonValueBinary <$> getBsonBinary
+        BSON_OID       -> BsonValueObjectId <$> getBsonObjectId
+        BSON_BOOLEAN   -> BsonValueBool <$> getBsonBool
+        BSON_UTC       -> BsonValueUtcTime <$> getBsonUtcTime
+        BSON_NULL      -> return BsonValueNull
+        BSON_REGEX     -> BsonValueRegex <$> getBsonCString <*> getBsonCString
+        BSON_JS        -> BsonValueJavascript <$> getBsonCString
+        BSON_JS_WITH_SCOPE ->
+            uncurry BsonValueJavascriptWithScope <$> getBsonJsWithScope
+        BSON_INT32     -> BsonValueInt32 . fromIntegral <$> getWord32le
+        BSON_INT64     -> BsonValueInt64 . fromIntegral <$> getWord64le
+        BSON_TIMESTAMP -> BsonValueTimestamp . fromIntegral <$> getWord64le
+        BSON_MIN       -> return BsonValueMin
+        BSON_MAX       -> return BsonValueMax
+        _              -> fail $ printf "Invalid BSON tag: %i" tag
     return (key, value)
 {-# INLINE getBsonField #-}
 
@@ -142,11 +149,11 @@ putBsonBinary binary = do
     putByteString payload
   where
     (tag, payload) = case binary of
-        BsonBinaryGeneric a     -> (0x00, a)
-        BsonBinaryFunction a    -> (0x01, a)
-        BsonBinaryUuid a         -> (0x04, a)
-        BsonBinaryMd5 a         -> (0x05, a)
-        BsonBinaryUserDefined a -> (0x80, a)
+        BsonBinaryGeneric a     -> (BSON_GENERIC_BINARY, a)
+        BsonBinaryFunction a    -> (BSON_FUNCTION, a)
+        BsonBinaryUuid a        -> (BSON_UUID, a)
+        BsonBinaryMd5 a         -> (BSON_MD5, a)
+        BsonBinaryUserDefined a -> (BSON_USER_DEFINED_BINARY, a)
 {-# INLINE putBsonBinary #-}
 
 getBsonBinary :: Get BsonBinary
@@ -155,12 +162,12 @@ getBsonBinary = do
     tag <- getWord8
     bytes <- getByteString len
     case tag of
-        0x00 -> return $ BsonBinaryGeneric bytes
-        0x01 -> return $ BsonBinaryFunction bytes
-        0x04 -> return $ BsonBinaryUuid bytes
-        0x05 -> return $ BsonBinaryMd5 bytes
-        0x80 -> return $ BsonBinaryUserDefined bytes
-        _     -> fail "Invalid bson binary"
+        BSON_GENERIC_BINARY -> return $ BsonBinaryGeneric bytes
+        BSON_FUNCTION -> return $ BsonBinaryFunction bytes
+        BSON_UUID -> return $ BsonBinaryUuid bytes
+        BSON_MD5 -> return $ BsonBinaryMd5 bytes
+        BSON_USER_DEFINED_BINARY -> return $ BsonBinaryUserDefined bytes
+        _ -> fail $ printf "Invalid BSON binary subtype: %i" tag
 {-# INLINE getBsonBinary #-}
 
 putBsonObjectId :: BsonObjectId -> Put
@@ -232,14 +239,14 @@ getBsonString = do
     payload <- getByteString $ len - 1
     getWord8 >>= \z -> case z of
         0x00 -> return $ TE.decodeUtf8 payload
-        _     -> fail "Invalid bson string"
+        _    -> fail "BSON string is not NULL terminated"
 {-# INLINE getBsonString #-}
 
 getBsonBool :: Get Bool
-getBsonBool = getWord8 >>= \t -> case t of
+getBsonBool = getWord8 >>= \v -> case v of
     0x00 -> return False
     0x01 -> return True
-    _     -> fail "Invalind bson bool"
+    _    -> fail $ printf "Invalind BSON boolean: " v
 {-# INLINE getBsonBool #-}
 
 putWord24le :: Word24 -> Put
