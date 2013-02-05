@@ -100,7 +100,7 @@ putBsonDocument doc = do
     putWord8 0x00
   where
     bytes = runPut $ sequence_ $ HashMap.foldlWithKey' f [] doc
-    f a k v = (putBsonField k v) : a
+    f a k v = putBsonField k v : a
 {-# INLINE putBsonDocument #-}
 
 getBsonDocument :: Get BsonDocument
@@ -121,7 +121,7 @@ intToText = TL.toStrict . TL.toLazyText . decimal
 putBsonArray :: BsonArray -> Put
 putBsonArray array = putBsonDocument doc
   where
-    inf = Vector.generate (Vector.length array) $ intToText
+    inf = Vector.generate (Vector.length array) intToText
     doc = Vector.foldl' f HashMap.empty $ Vector.zip inf array
     f a (k, v) = HashMap.insert k v a
 {-# INLINE putBsonArray #-}
@@ -244,7 +244,7 @@ getBsonBool = getWord8 >>= \t -> case t of
 
 putWord24le :: Word24 -> Put
 putWord24le w = do
-    putWord8 $ fromIntegral $ w
+    putWord8 $ fromIntegral w
     putWord8 $ fromIntegral $ shiftR w 8
     putWord8 $ fromIntegral $ shiftR w 16
 {-# INLINE putWord24le #-}
