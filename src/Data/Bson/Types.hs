@@ -1,4 +1,4 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE DeriveDataTypeable #-}
 
 module Data.Bson.Types
     ( BsonValue(..)
@@ -12,6 +12,7 @@ module Data.Bson.Types
 import Data.Int (Int32, Int64)
 import Data.Time.Clock (UTCTime)
 import Data.Time.Format ()
+import Data.Typeable (Typeable)
 import Data.Word (Word32, Word16)
 import qualified Data.ByteString as S
 
@@ -38,7 +39,7 @@ data BsonValue = BsonValueDouble {-# UNPACK #-} !Double
                | BsonValueTimestamp {-# UNPACK #-} !Int64
                | BsonValueMin
                | BsonValueMax
-    deriving (Eq, Show)
+    deriving (Eq, Show, Typeable)
 
 type BsonLabel = Text
 type BsonDocument = HashMap BsonLabel BsonValue
@@ -49,11 +50,11 @@ data BsonObjectId = BsonObjectId
     , bsonObjectIdMachine :: {-# UNPACK #-} !Word32
     , bsonObjectIdPid     :: {-# UNPACK #-} !Word16
     , bsonObjectIdInc     :: {-# UNPACK #-} !Word24
-    } deriving (Eq, Show)
+    } deriving (Eq, Show, Typeable)
 
 data BsonBinary = BsonBinaryGeneric     S.ByteString
                 | BsonBinaryFunction    S.ByteString
                 | BsonBinaryUuid        S.ByteString
                 | BsonBinaryMd5         S.ByteString
                 | BsonBinaryUserDefined S.ByteString
-    deriving (Eq, Show)
+    deriving (Eq, Show, Typeable)
