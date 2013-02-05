@@ -1,8 +1,10 @@
 module Main where
 
+import Data.Int (Int32, Int64)
+import Data.Time.Clock (UTCTime)
 import System.Random (StdGen, getStdGen)
 
-import Criterion.Main (defaultMain, bench, whnf)
+import Criterion.Main (defaultMain, bench, bgroup, whnf)
 import Data.Text (Text)
 import Test.QuickCheck (Arbitrary, arbitrary, resize)
 import Test.QuickCheck.Gen (unGen)
@@ -10,15 +12,22 @@ import Test.QuickCheck.Gen (unGen)
 import Data.Bson.Class (FromBson(..), ToBson(..))
 import Data.Bson.Instances ()
 import Data.Bson.Tests.Instances ()
-import Data.Bson.Types (BsonValue, BsonDocument)
+import Data.Bson.Types (BsonValue, BsonDocument, BsonArray, BsonBinary,
+                        BsonObjectId)
 
 main :: IO ()
 main = do
     stdGen <- getStdGen
     defaultMain
-        [ bench "Double" (whnf f (generate stdGen :: Double))
-        , bench "Text" (whnf f (generate stdGen :: Text))
-        , bench "Document" (whnf f (generate stdGen :: BsonDocument))
+        [ bgroup "fromBson . toBson"
+          [ bench "Double" (whnf f (generate stdGen :: Double))
+          , bench "Text" (whnf f (generate stdGen :: Text))
+          , bench "Document" (whnf f (generate stdGen :: BsonDocument))
+          , bench "Bool" (whnf f (generate stdGen :: Bool))
+          , bench "UTCTime" (whnf f (generate stdGen :: UTCTime))
+          , bench "Int32" (whnf f (generate stdGen :: Int32))
+          , bench "Int64" (whnf f (generate stdGen :: Int64))
+          ]
         ]
   where
     n :: Int
