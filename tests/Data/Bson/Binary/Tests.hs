@@ -10,13 +10,9 @@ import Test.Framework.Providers.QuickCheck2 (testProperty)
 import Data.Bson.Types (BsonDocument)
 import Data.Bson.Binary ()
 import Data.Bson.Tests.Instances ()
-import Debug.Trace
 
 testEncodeDecodeDocument :: BsonDocument -> Bool 
-testEncodeDecodeDocument doc = (==) doc $ ((trace $ show decoded) $ decode $ encode doc)
-  where
-    decoded :: BsonDocument
-    decoded = decode $ encode doc
+testEncodeDecodeDocument doc = (==) doc $ decode $ encode doc
 
 tests :: Test
 tests = testGroup "Data.Bson.Binary.Tests" 
