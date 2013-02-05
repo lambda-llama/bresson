@@ -21,7 +21,7 @@ import Data.Word.Word24 (Word24)
 import Data.Text (Text)
 
 -- | A BSON value is one of the following types of values
-data BsonValue = BsonValueDouble Double
+data BsonValue = BsonValueDouble {-# UNPACK #-} !Double
                | BsonValueString Text
                | BsonValueDocument BsonDocument
                | BsonValueArray BsonArray
@@ -33,22 +33,22 @@ data BsonValue = BsonValueDouble Double
                | BsonValueRegex Text Text
                | BsonValueJavascript Text
                | BsonValueJavascriptWithScope BsonDocument Text
-               | BsonValueInt32 Int32
-               | BsonValueInt64 Int64
-               | BsonValueTimestamp Int64
+               | BsonValueInt32 {-# UNPACK #-} !Int32
+               | BsonValueInt64 {-# UNPACK #-} !Int64
+               | BsonValueTimestamp {-# UNPACK #-} !Int64
                | BsonValueMin
                | BsonValueMax
-            deriving (Eq, Show)
+    deriving (Eq, Show)
 
 type BsonLabel = Text
 type BsonDocument = HashMap BsonLabel BsonValue
 type BsonArray = Vector BsonValue
 
 data BsonObjectId = BsonObjectId
-    { bsonObjectIdTime    :: Word32
-    , bsonObjectIdMachine :: Word32
-    , bsonObjectIdPid     :: Word16
-    , bsonObjectIdInc     :: Word24
+    { bsonObjectIdTime    :: {-# UNPACK #-} !Word32
+    , bsonObjectIdMachine :: {-# UNPACK #-} !Word32
+    , bsonObjectIdPid     :: {-# UNPACK #-} !Word16
+    , bsonObjectIdInc     :: {-# UNPACK #-} !Word24
     } deriving (Eq, Show)
 
 data BsonBinary = BsonBinaryGeneric     S.ByteString
