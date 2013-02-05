@@ -1,16 +1,16 @@
 module Data.Bson
-	( -- * Document
-	  BsonDocument
-	, BsonValue(..)
-	, BsonBinary(..)
+    ( -- * Document
+      BsonDocument
+    , BsonValue(..)
+    , BsonBinary(..)
     , BsonObjectId(..)
     , BsonLabel
-	, ToBson(..)
-	, FromBson(..)
-	, (!?)
+    , ToBson(..)
+    , FromBson(..)
+    , (!?)
 ) where
 
 import Data.Bson.Class (ToBson(..), FromBson(..))
 import Data.Bson.Types (BsonValue(..), BsonBinary(..),
-						BsonObjectId(..), BsonDocument, BsonLabel)
+                        BsonObjectId(..), BsonDocument, BsonLabel)
 import Data.Bson.Utils ((!?))
