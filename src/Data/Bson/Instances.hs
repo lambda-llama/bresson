@@ -170,11 +170,12 @@ bsonFromIntegral a
     | a `within` targetBounds = Right $ fromIntegral a
     | otherwise = Left "Expected "  -- FIXME(knsd)
   where
-    targetBounds = ( fromIntegral $ (minBound :: b)
-                   , fromIntegral $ (maxBound :: b))
+    targetBounds = ( fromIntegral (minBound :: b)
+                   , fromIntegral (maxBound :: b)
+                   )
 {-# INLINE bsonFromIntegral #-}
 
--- | Make sure a given value is within a @(low, high)@ bound.
+-- | Make sure a given value is within a @[low, high]@ bound.
 within :: Ord a => a -> (a, a) -> Bool
 within x (l, h) = x >= l && x <= h
 {-# INLINE within #-}
