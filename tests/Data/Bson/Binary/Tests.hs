@@ -11,10 +11,10 @@ import Data.Bson.Types (BsonDocument)
 import Data.Bson.Binary ()
 import Data.Bson.Tests.Instances ()
 
-testEncodeDecodeDocument :: BsonDocument -> Bool 
+testEncodeDecodeDocument :: BsonDocument -> Bool
 testEncodeDecodeDocument doc = (==) doc $ decode $ encode doc
 
 tests :: Test
-tests = testGroup "Data.Bson.Binary.Tests" 
+tests = testGroup "Data.Bson.Binary.Tests"
     [ testProperty "testEncodeDecodeDocument" testEncodeDecodeDocument
     ]
