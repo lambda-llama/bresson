@@ -27,6 +27,7 @@ Library
                   , data-binary-ieee754       == 0.4.*
                   , word24                    == 1.0.*
                   , text                      == 0.11.*
+                  , text-format               == 0.3.*
                   , vector                    == 0.10.*
                   , unordered-containers      == 0.2.*
 
@@ -48,6 +49,8 @@ Test-suite bresson-tests
                   , text                      == 0.11.*
                   , vector                    == 0.10.*
                   , unordered-containers      == 0.2.*
+                  -- FIXME(Sergei): make a dependency on 'bresson'
+                  , text-format               == 0.3.*
 
                   , test-framework             == 0.8.*
                   , test-framework-quickcheck2 == 0.3.*
@@ -68,6 +71,8 @@ Benchmark benchmarks
                   , text                      == 0.11.*
                   , vector                    == 0.10.*
                   , unordered-containers      == 0.2.*
+                  -- FIXME(Sergei): make a dependency on 'bresson'
+                  , text-format               == 0.3.*
 
                   , criterion                 == 0.6.*
                   , QuickCheck                == 2.5.*

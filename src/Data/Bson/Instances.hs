@@ -14,6 +14,9 @@ import Data.Time.Clock (UTCTime)
 import qualified Data.ByteString as S
 
 import Data.Text (Text)
+import Data.Text.Buildable (Buildable)
+import Data.Text.Format (format)
+import qualified Data.Text.Lazy as LT
 import qualified Data.Vector as Vector
 
 import Data.Bson.Class (ToBson(..), FromBson(..))
@@ -64,7 +67,8 @@ instance ToBson Int where
         | otherwise              = BsonValueInt64 $ fromIntegral i
       where
         int32Bounds = ( fromIntegral (minBound :: Int32)
-                      , fromIntegral (maxBound :: Int32))
+                      , fromIntegral (maxBound :: Int32)
+                      )
 #endif
     {-# INLINE toBson #-}
 
@@ -159,20 +163,23 @@ instance FromBson a => FromBson (Maybe a) where
     {-# INLINE fromBson #-}
 
 instance FromBson a => FromBson [a] where
-    fromBson (BsonValueArray a) = fmap Vector.toList $ Vector.mapM fromBson a
+    fromBson (BsonValueArray a) = Vector.toList <$> Vector.mapM fromBson a
     fromBson _ = Left "Expected BsonValueArray"
     {-# INLINE fromBson #-}
 
-bsonFromIntegral :: forall a b. (Integral a, Integral b, Bounded b)
+bsonFromIntegral :: forall a b. (Integral a, Integral b, Bounded b, Buildable a)
                  => a
                  -> Either Text b
-bsonFromIntegral a
-    | a `within` targetBounds = Right $ fromIntegral a
-    | otherwise = Left "Expected "  -- FIXME(knsd)
+bsonFromIntegral i
+    | i `within` targetBounds = Right $ fromIntegral i
+    | otherwise =
+        Left . LT.toStrict $
+        format "Integral {} out of bounds [{}, {}]" [i, targetMin, targetMax]
   where
     targetBounds = ( fromIntegral (minBound :: b)
                    , fromIntegral (maxBound :: b)
                    )
+    (targetMin, targetMax) = targetBounds
 {-# INLINE bsonFromIntegral #-}
 
 -- | Make sure a given value is within a @[low, high]@ bound.
