@@ -99,14 +99,19 @@ getBsonField = do
     return (key, value)
 {-# INLINE getBsonField #-}
 
-putBsonDocument :: BsonDocument -> Put
-putBsonDocument doc = do
+putAsDocument :: Put -> Put
+putAsDocument p = do
     -- include length and null terminator
     putWord32le $ fromIntegral $ L.length bytes + 5
     putLazyByteString bytes
     putWord8 0x00
   where
-    bytes = runPut $ sequence_ $ HashMap.foldlWithKey' f [] doc
+    bytes = runPut p
+{-# INLINE putAsDocument #-}
+
+putBsonDocument :: BsonDocument -> Put
+putBsonDocument doc = putAsDocument $ sequence_ $ HashMap.foldlWithKey' f [] doc
+  where
     f a k v = putBsonField k v : a
 {-# INLINE putBsonDocument #-}
 
@@ -124,13 +129,12 @@ getBsonDocument = do
 
 intToText :: Int -> Text
 intToText = TL.toStrict . TL.toLazyText . decimal
+{-# INLINE intToText #-}
 
 putBsonArray :: BsonArray -> Put
-putBsonArray array = putBsonDocument doc
+putBsonArray array = putAsDocument $ Vector.zipWithM_ putBsonField inf array
   where
     inf = Vector.generate (Vector.length array) intToText
-    doc = Vector.foldl' f HashMap.empty $ Vector.zip inf array
-    f a (k, v) = HashMap.insert k v a
 {-# INLINE putBsonArray #-}
 
 getBsonArray :: Get BsonArray
