@@ -10,6 +10,9 @@ module Data.Bson.Instances () where
 
 import Control.Applicative ((<$>))
 import Control.DeepSeq (NFData(..))
+#if !MIN_VERSION_bytestring(0,10,0)
+import Data.ByteString (ByteString)
+#endif
 import Data.Int (Int16, Int8, Int32, Int64)
 import Data.Time.Clock (UTCTime)
 import qualified Data.ByteString as S
@@ -206,6 +209,11 @@ instance NFData BsonBinary where
     rnf (BsonBinaryUuid a) = rnf a `seq` ()
     rnf (BsonBinaryMd5 a) = rnf a `seq` ()
     rnf (BsonBinaryUserDefined a) = rnf a `seq` ()
+
+#if !MIN_VERSION_bytestring(0,10,0)
+instance NFData ByteString where
+    rnf x = S.length x `seq` ()
+#endif
 
 -------------------------------------------------------------------------------
 -- * Helpers
