@@ -9,6 +9,7 @@ module Data.Bson.Instances () where
 #include "MachDeps.h"
 
 import Control.Applicative ((<$>))
+import Control.DeepSeq (NFData(..))
 import Data.Int (Int16, Int8, Int32, Int64)
 import Data.Time.Clock (UTCTime)
 import qualified Data.ByteString as S
@@ -17,7 +18,11 @@ import Data.Text (Text)
 import qualified Data.Vector as Vector
 
 import Data.Bson.Class (ToBson(..), FromBson(..))
-import Data.Bson.Types (BsonValue(..), BsonBinary(..), BsonDocument)
+import Data.Bson.Types (BsonValue(..), BsonBinary(..), BsonObjectId(..),
+                        BsonDocument)
+
+-------------------------------------------------------------------------------
+-- * ToBson instances
 
 instance ToBson BsonValue where
     toBson = id
@@ -84,6 +89,9 @@ instance ToBson a => ToBson (Maybe a) where
 instance ToBson a => ToBson [a] where
     toBson = BsonValueArray . Vector.fromList . map toBson
     {-# INLINE toBson #-}
+
+-------------------------------------------------------------------------------
+-- * FromBson instances
 
 instance FromBson BsonValue where
     fromBson = Right . id
@@ -162,6 +170,41 @@ instance FromBson a => FromBson [a] where
     fromBson (BsonValueArray a) = fmap Vector.toList $ Vector.mapM fromBson a
     fromBson _ = Left "Expected BsonValueArray"
     {-# INLINE fromBson #-}
+
+-------------------------------------------------------------------------------
+-- * NFData instances for internal types
+
+instance NFData BsonValue where
+    rnf (BsonValueDouble _) = ()
+    rnf (BsonValueString a) = rnf a `seq` ()
+    rnf (BsonValueDocument a) = rnf a `seq` ()
+    rnf (BsonValueArray a) = rnf a `seq` ()
+    rnf (BsonValueBinary a) = rnf a `seq` ()
+    rnf (BsonValueObjectId a) = rnf a `seq` ()
+    rnf (BsonValueBool _) = ()
+    rnf (BsonValueUtcTime a) = rnf a `seq` ()
+    rnf BsonValueNull = ()
+    rnf (BsonValueRegex a b) = rnf a `seq` rnf b `seq` ()
+    rnf (BsonValueJavascript a) = rnf a `seq` ()
+    rnf (BsonValueJavascriptWithScope a b) = rnf a `seq` rnf b `seq` ()
+    rnf (BsonValueInt32 _) = ()
+    rnf (BsonValueInt64 _) = ()
+    rnf (BsonValueTimestamp _) = ()
+    rnf BsonValueMin = ()
+    rnf BsonValueMax = ()
+
+instance NFData BsonObjectId where
+    rnf (BsonObjectId _ _ _ _) = ()
+
+instance NFData BsonBinary where
+    rnf (BsonBinaryGeneric a) = rnf a `seq` ()
+    rnf (BsonBinaryFunction a) = rnf a `seq` ()
+    rnf (BsonBinaryUuid a) = rnf a `seq` ()
+    rnf (BsonBinaryMd5 a) = rnf a `seq` ()
+    rnf (BsonBinaryUserDefined a) = rnf a `seq` ()
+
+-------------------------------------------------------------------------------
+-- * Helpers
 
 bsonFromIntegral :: forall a b. (Integral a, Integral b, Bounded b)
                  => a
