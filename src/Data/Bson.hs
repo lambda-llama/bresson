@@ -7,10 +7,12 @@ module Data.Bson
     , BsonLabel
     , ToBson(..)
     , FromBson(..)
+    , document
     , (!?)
+    , (=:)
 ) where
 
 import Data.Bson.Class (ToBson(..), FromBson(..))
 import Data.Bson.Types (BsonValue(..), BsonBinary(..),
                         BsonObjectId(..), BsonDocument, BsonLabel)
-import Data.Bson.Utils ((!?))
+import Data.Bson.Utils (document, (!?), (=:))

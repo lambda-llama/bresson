@@ -7,6 +7,7 @@ module Data.Bson.Types
     , BsonDocument
     , BsonArray
     , BsonLabel
+    , BsonField
     ) where
 
 import Data.Int (Int32, Int64)
@@ -44,6 +45,7 @@ data BsonValue = BsonValueDouble {-# UNPACK #-} !Double
 type BsonLabel = Text
 type BsonDocument = HashMap BsonLabel BsonValue
 type BsonArray = Vector BsonValue
+type BsonField = (BsonLabel, BsonValue)
 
 data BsonObjectId = BsonObjectId
     { bsonObjectIdTime    :: {-# UNPACK #-} !Word32
