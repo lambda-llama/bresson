@@ -100,52 +100,78 @@ instance ToBson a => ToBson [a] where
 -------------------------------------------------------------------------------
 -- * FromBson instances
 
+unexpectedBsonValue :: Text -> BsonValue -> Text
+unexpectedBsonValue expected v =
+    LT.toStrict $ format "Expected {}, got {} instead" [expected, got]
+  where
+    got :: Text
+    got = case v of
+        BsonValueDocument _d -> "Embedded document"
+        BsonValueString _s   -> "UTF-8 string"
+        BsonValueBinary _b   -> "Binary"
+        BsonValueBool _b     -> "Boolean"
+        BsonValueInt32 _i    -> "32-bit Integer"
+        BsonValueInt64 _i    -> "64-bit Integer"
+        BsonValueDouble _d   -> "Double"
+        BsonValueUtcTime _t  -> "UTC datetime"
+        BsonValueArray _a    -> "Array"
+        BsonValueObjectId {} -> "ObjectId"
+        BsonValueNull        -> "NULL"
+        BsonValueRegex _p _o -> "Regular expression"
+        BsonValueJavascript _c -> "JavaScript code"
+        BsonValueJavascriptWithScope _c _s -> "JavaScript code with scope"
+        BsonValueTimestamp _i  -> "Timestamp"
+        BsonValueMin         -> "Min key"
+        BsonValueMax         -> "Max key"
+
+{-# INLINE unexpectedBsonValue #-}
+
 instance FromBson BsonValue where
     fromBson = Right . id
     {-# INLINE fromBson #-}
 
 instance FromBson BsonDocument where
     fromBson (BsonValueDocument d) = Right d
-    fromBson _                     = Left "Expected BsonValueDocument"
+    fromBson v = Left $ unexpectedBsonValue "Embedded document" v
     {-# INLINE fromBson #-}
 
 instance FromBson Text where
     fromBson (BsonValueString t) = Right t
-    fromBson _                   = Left "Expected BsonValueText"
+    fromBson v = Left $ unexpectedBsonValue "UTF-8 string" v
     {-# INLINE fromBson #-}
 
 instance FromBson S.ByteString where
     fromBson (BsonValueBinary (BsonBinaryGeneric b)) = Right b
-    fromBson _ = Left "Expected BsonValueBinary BsonBinaryGeneric"
+    fromBson v = Left $ unexpectedBsonValue "Binary" v
     {-# INLINE fromBson #-}
 
 instance FromBson Bool where
     fromBson (BsonValueBool b) = Right b
-    fromBson _                 = Left "Expected BsonValueBool"
+    fromBson v                 = Left $ unexpectedBsonValue "Boolean" v
     {-# INLINE fromBson #-}
 
 instance FromBson Int8 where
     fromBson (BsonValueInt32 i) = bsonFromIntegral i
     fromBson (BsonValueInt64 i) = bsonFromIntegral i
-    fromBson _ = Left "Expected BsonValueInt32 or BsonValueInt64"
+    fromBson v = Left $ unexpectedBsonValue "32-bit or 64-bit Integer" v
     {-# INLINE fromBson #-}
 
 instance FromBson Int16 where
     fromBson (BsonValueInt32 i) = bsonFromIntegral i
     fromBson (BsonValueInt64 i) = bsonFromIntegral i
-    fromBson _ = Left "Expected BsonValueInt32 or BsonValueInt64"
+    fromBson v = Left $ unexpectedBsonValue "32-bit or 64-bit Integer" v
     {-# INLINE fromBson #-}
 
 instance FromBson Int32 where
     fromBson (BsonValueInt32 i) = Right i
     fromBson (BsonValueInt64 i) = bsonFromIntegral i
-    fromBson _ = Left "Expected BsonValueInt32 or BsonValueInt64"
+    fromBson v = Left $ unexpectedBsonValue "32-bit or 64-bit Integer" v
     {-# INLINE fromBson #-}
 
 instance FromBson Int64 where
     fromBson (BsonValueInt32 i) = Right $ fromIntegral i
     fromBson (BsonValueInt64 i) = Right i
-    fromBson _ = Left "Expected BsonValueInt32 or BsonValueInt64"
+    fromBson v = Left $ unexpectedBsonValue "32-bit or 64-bit Integer" v
     {-# INLINE fromBson #-}
 
 instance FromBson Int where
@@ -155,17 +181,17 @@ instance FromBson Int where
 #elif WORD_SIZE_IN_BITS == 64
     fromBson (BsonValueInt64 i) = Right $ fromIntegral i
 #endif
-    fromBson _ = Left "Expected BsonValueInt32 or BsonValueInt64"
+    fromBson v = Left $ unexpectedBsonValue "32-bit or 64-bit Integer" v
     {-# INLINE fromBson #-}
 
 instance FromBson Double where
     fromBson (BsonValueDouble d) = Right d
-    fromBson _ = Left "Expected BsonValueDouble"
+    fromBson v = Left $ unexpectedBsonValue "Double" v
     {-# INLINE fromBson #-}
 
 instance FromBson UTCTime where
     fromBson (BsonValueUtcTime t) = Right t
-    fromBson _ = Left "Expected BsonValueUtcTime"
+    fromBson v = Left $ unexpectedBsonValue "UTC datetime" v
     {-# INLINE fromBson #-}
 
 instance FromBson a => FromBson (Maybe a) where
@@ -175,7 +201,7 @@ instance FromBson a => FromBson (Maybe a) where
 
 instance FromBson a => FromBson [a] where
     fromBson (BsonValueArray a) = Vector.toList <$> Vector.mapM fromBson a
-    fromBson _ = Left "Expected BsonValueArray"
+    fromBson v = Left $ unexpectedBsonValue "Array" v
     {-# INLINE fromBson #-}
 
 -------------------------------------------------------------------------------
@@ -201,7 +227,7 @@ instance NFData BsonValue where
     rnf BsonValueMax = ()
 
 instance NFData BsonObjectId where
-    rnf (BsonObjectId _ _ _ _) = ()
+    rnf (BsonObjectId {}) = ()
 
 instance NFData BsonBinary where
     rnf (BsonBinaryGeneric a) = rnf a `seq` ()
