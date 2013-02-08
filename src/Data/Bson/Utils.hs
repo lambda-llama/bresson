@@ -18,6 +18,7 @@ import Data.Bson.Types (BsonLabel, BsonDocument, BsonField)
 
 document :: [BsonField] -> BsonDocument
 document = HashMap.fromList
+{-# INLINE document #-}
 
 lookup :: FromBson a => BsonLabel -> BsonDocument -> Maybe a
 lookup label doc = do
