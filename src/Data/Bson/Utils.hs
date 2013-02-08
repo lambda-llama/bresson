@@ -7,6 +7,7 @@ module Data.Bson.Utils
     ) where
 
 import Control.Monad (foldM)
+import Prelude hiding (lookup)
 
 import qualified Data.Text as ST
 import qualified Data.HashMap.Strict as HashMap
@@ -18,13 +19,21 @@ import Data.Bson.Types (BsonLabel, BsonDocument, BsonField)
 document :: [BsonField] -> BsonDocument
 document = HashMap.fromList
 
+lookup :: FromBson a => BsonLabel -> BsonDocument -> Maybe a
+lookup label doc = do
+    v <- HashMap.lookup label doc
+    either (const Nothing) Just $! fromBson v
+
 -- | Recursively lookup a nested field in a Document.
 (!?) :: FromBson a => BsonDocument -> BsonLabel -> Maybe a
-doc !? label = foldM (flip look) doc (init chunks) >>=
-    look (last chunks)
+doc !? label = do
+    inner <- foldM (flip lookup) doc (init chunks)
+    lookup (last chunks) inner
   where
+    chunks :: [BsonLabel]
     chunks = ST.splitOn "." label
-    look k o = HashMap.lookup k o >>= either (const Nothing) Just . fromBson
+{-# INLINE (!?) #-}
 
 (=:) :: ToBson a => BsonLabel -> a -> BsonField
-k =: v = (k, toBson v)
+label =: v = (label, toBson v)
+{-# INLINE (=:) #-}
