@@ -9,11 +9,9 @@ import Data.Text (Text)
 import Test.QuickCheck (Arbitrary, arbitrary, resize)
 import Test.QuickCheck.Gen (unGen)
 
-import Data.Bson.Class (FromBson(..), ToBson(..))
-import Data.Bson.Instances ()
+import Data.Bson (FromBson(..), ToBson(..), BsonDocument, BsonValue,
+                  BsonBinary, BsonObjectId, BsonArray)
 import Data.Bson.Tests.Instances ()
-import Data.Bson.Types (BsonValue, BsonDocument, BsonArray, BsonBinary,
-                        BsonObjectId)
 
 main :: IO ()
 main = do

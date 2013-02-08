@@ -7,7 +7,7 @@ import Data.Binary (encode, decode)
 import Test.Framework (Test, testGroup)
 import Test.Framework.Providers.QuickCheck2 (testProperty)
 
-import Data.Bson.Types (BsonDocument)
+import Data.Bson (BsonDocument)
 import Data.Bson.Binary ()
 import Data.Bson.Tests.Instances ()
 

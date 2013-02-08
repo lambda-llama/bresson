@@ -15,8 +15,8 @@ import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Text as T
 import qualified Data.Vector as Vector
 
-import Data.Bson.Types (BsonValue(..), BsonBinary(..),
-                        BsonObjectId(..), BsonDocument, BsonArray)
+import Data.Bson (BsonValue(..), BsonBinary(..),
+                  BsonObjectId(..), BsonDocument, BsonArray)
 
 instance Arbitrary BsonArray where
     arbitrary = fmap Vector.fromList arbitrary

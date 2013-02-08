@@ -10,9 +10,7 @@ import Data.Text (Text)
 import Test.Framework (Test, testGroup)
 import Test.Framework.Providers.QuickCheck2 (testProperty)
 
-import Data.Bson.Class (ToBson(..), FromBson(..))
-import Data.Bson.Instances ()
-import Data.Bson.Types (BsonValue)
+import Data.Bson (BsonValue, ToBson(..), FromBson(..))
 import Data.Bson.Tests.Instances ()
 
 testToFromBson :: (ToBson a, FromBson a, Eq a) => a -> Bool
