@@ -20,6 +20,7 @@ import qualified Data.ByteString as S
 import Data.Text (Text)
 import Data.Text.Buildable (Buildable)
 import Data.Text.Format (format)
+import Data.Vector (Vector)
 import qualified Data.Text.Lazy as LT
 import qualified Data.Vector as Vector
 
@@ -95,6 +96,10 @@ instance ToBson a => ToBson (Maybe a) where
 
 instance ToBson a => ToBson [a] where
     toBson = BsonValueArray . Vector.fromList . map toBson
+    {-# INLINE toBson #-}
+
+instance ToBson a => ToBson (Vector a) where
+    toBson = BsonValueArray . Vector.map toBson
     {-# INLINE toBson #-}
 
 -------------------------------------------------------------------------------
@@ -201,6 +206,11 @@ instance FromBson a => FromBson (Maybe a) where
 
 instance FromBson a => FromBson [a] where
     fromBson (BsonValueArray a) = Vector.toList <$> Vector.mapM fromBson a
+    fromBson v = Left $ unexpectedBsonValue "Array" v
+    {-# INLINE fromBson #-}
+
+instance FromBson a => FromBson (Vector a) where
+    fromBson (BsonValueArray a) = Vector.mapM fromBson a
     fromBson v = Left $ unexpectedBsonValue "Array" v
     {-# INLINE fromBson #-}
 
