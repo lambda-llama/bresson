@@ -21,16 +21,17 @@ driver? Here's why:
 * Provides separate classes `ToBson` and `FromBson`, instead of a single
   `Val` class.
 * Well tested
-  ([![Build Status](https://secure.travis-ci.org/knsd/bresson.png)][travis])
+  ([![Build Status][travis-img]][travis])
   and community maintained!
 
 [bson]: http://bsonspec.org/#/specification
 [mongodb]: http://mongodb.com
 [bson-haskell]: https://github.com/mongodb/bson-haskell
-[hashtable]: http://hackage.haskell.org/package/unordered-containers-0.2.3.0]
+[hashtable]: http://hackage.haskell.org/package/unordered-containers-0.2.3.0
 [text]: http://hackage.haskell.org/package/text-0.11.2.3
 [ustring]: http://hackage.haskell.org/package/compact-string-fix-0.3.2
-[travis]: (http://travis-ci.org/knsd/bresson)
+[travis]: http://travis-ci.org/knsd/bresson
+[travis-img]: https://secure.travis-ci.org/knsd/bresson.png
 
 Example
 -------
