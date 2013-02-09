@@ -36,15 +36,25 @@ driver? Here's why:
 Example
 -------
 
+If you ever used [`bson-haskell`] [bson-haskell], the API should look
+familiar, except for the `!?` operator, which allows retrieving nested
+labels:
+
 ```haskell
 {-# LANGUAGE OverloadedStrings #-}
 
-import Data.Binary (encode)
-import Data.Bson (document, (=:))
+import Data.Binary (encode, decode)
+import Data.Bson (BsonDocument, document, (=:), (!?))
 import qualified Data.ByteString.Lazy as L
 
 buffer :: L.ByteString
 buffer = encode $ document [ "foo" =: "bar"
                            , "bar" =: document [ "boo" =: 42 ]
                            ]
+
+doc :: BsonDocument
+doc = decode buffer
+
+value :: Int
+value = doc !? "foo.bar.boo"  -- ==> 42
 ```
