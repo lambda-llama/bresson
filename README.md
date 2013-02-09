@@ -21,7 +21,7 @@ driver? Here's why:
 * Provides separate classes `ToBson` and `FromBson`, instead of a single
   `Val` class.
 * Well tested
-  ([![Build Status](https://secure.travis-ci.org/knsd/bresson.png)] [travis])
+  ([![Build Status](https://secure.travis-ci.org/knsd/bresson.png)][travis])
   and community maintained!
 
 [bson]: http://bsonspec.org/#/specification
