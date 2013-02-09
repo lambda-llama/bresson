@@ -7,7 +7,7 @@
 
 module Data.Bson.Binary () where
 
-#include "Bson.h"
+#include "bson.h"
 
 import Prelude hiding (length, concat)
 import Control.Applicative ((<$>), (<*>))
