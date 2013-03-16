@@ -11,8 +11,8 @@
 #define BSON_JS 0x0d
 #define BSON_JS_WITH_SCOPE 0x0f
 #define BSON_INT32 0x10
-#define BSON_INT64 0x11
-#define BSON_TIMESTAMP 0x12
+#define BSON_TIMESTAMP 0x11
+#define BSON_INT64 0x12
 #define BSON_MIN 0xff
 #define BSON_MAX 0x7f
 
