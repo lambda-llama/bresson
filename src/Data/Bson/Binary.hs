@@ -61,7 +61,7 @@ putBsonField key value = do
         BsonValueNull         -> (BSON_NULL, return ())
         BsonValueRegex a b    ->
             (BSON_REGEX, putBsonCString a >> putBsonCString b)
-        BsonValueJavascript a -> (BSON_JS, putBsonCString a)
+        BsonValueJavascript a -> (BSON_JS, putBsonString a)
         BsonValueJavascriptWithScope a b ->
             (BSON_JS_WITH_SCOPE, putBsonJsWithScope a b)
         BsonValueInt32 a      -> (BSON_INT32, putWord32le $ fromIntegral a)
@@ -86,7 +86,7 @@ getBsonField = do
         BSON_UTC       -> BsonValueUtcTime <$> getBsonUtcTime
         BSON_NULL      -> return BsonValueNull
         BSON_REGEX     -> BsonValueRegex <$> getBsonCString <*> getBsonCString
-        BSON_JS        -> BsonValueJavascript <$> getBsonCString
+        BSON_JS        -> BsonValueJavascript <$> getBsonString
         BSON_JS_WITH_SCOPE ->
             uncurry BsonValueJavascriptWithScope <$> getBsonJsWithScope
         BSON_INT32     -> BsonValueInt32 . fromIntegral <$> getWord32le
