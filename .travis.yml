@@ -1,1 +1,2 @@
 language: haskell
+script: "cabal configure --enable-tests --enable-benchmarks -fdevtools && cabal build && cabal test && cabal benchmark"
