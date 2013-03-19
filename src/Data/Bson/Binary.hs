@@ -176,14 +176,14 @@ getBsonBinary = do
 putBsonObjectId :: BsonObjectId -> Put
 putBsonObjectId BsonObjectId { .. } = do
     putWord32le bsonObjectIdTime
-    putWord32le bsonObjectIdMachine
+    putWord24le bsonObjectIdMachine
     putWord16le bsonObjectIdPid
     putWord24le bsonObjectIdInc
 {-# INLINE putBsonObjectId #-}
 
 getBsonObjectId :: Get BsonObjectId
 getBsonObjectId = BsonObjectId <$> getWord32le
-                               <*> getWord32le
+                               <*> getWord24le
                                <*> getWord16le
                                <*> getWord24le
 {-# INLINE getBsonObjectId #-}

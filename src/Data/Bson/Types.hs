@@ -49,7 +49,7 @@ type BsonField = (BsonLabel, BsonValue)
 
 data BsonObjectId = BsonObjectId
     { bsonObjectIdTime    :: {-# UNPACK #-} !Word32
-    , bsonObjectIdMachine :: {-# UNPACK #-} !Word32
+    , bsonObjectIdMachine :: {-# UNPACK #-} !Word24
     , bsonObjectIdPid     :: {-# UNPACK #-} !Word16
     , bsonObjectIdInc     :: {-# UNPACK #-} !Word24
     } deriving (Eq, Show, Typeable)
