@@ -34,6 +34,7 @@ import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Builder as TL
 import qualified Data.Text.Encoding as TE
 import qualified Data.Vector as Vector
+import qualified Data.UUID as UUID
 
 import Data.Bson.Types (BsonDocument, BsonArray, BsonLabel, BsonValue(..),
                         BsonBinary(..), BsonObjectId(..))
@@ -154,7 +155,7 @@ putBsonBinary binary = do
     (tag, payload) = case binary of
         BsonBinaryGeneric a     -> (BSON_GENERIC_BINARY, a)
         BsonBinaryFunction a    -> (BSON_FUNCTION, a)
-        BsonBinaryUuid a        -> (BSON_UUID, a)
+        BsonBinaryUuid a        -> (BSON_UUID, L.toStrict $ UUID.toByteString a)
         BsonBinaryMd5 a         -> (BSON_MD5, a)
         BsonBinaryUserDefined a -> (BSON_USER_DEFINED_BINARY, a)
 {-# INLINE putBsonBinary #-}
@@ -167,7 +168,9 @@ getBsonBinary = do
     case tag of
         BSON_GENERIC_BINARY -> return $ BsonBinaryGeneric bytes
         BSON_FUNCTION -> return $ BsonBinaryFunction bytes
-        BSON_UUID -> return $ BsonBinaryUuid bytes
+        BSON_UUID -> case UUID.fromByteString $ L.fromStrict bytes of
+            Just uuid -> return $ BsonBinaryUuid uuid
+            Nothing   -> fail "Invalid BSON binary uuid"
         BSON_MD5 -> return $ BsonBinaryMd5 bytes
         BSON_USER_DEFINED_BINARY -> return $ BsonBinaryUserDefined bytes
         _ -> fail $ printf "Invalid BSON binary subtype: %i" tag

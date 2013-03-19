@@ -21,6 +21,7 @@ import Data.HashMap.Strict (HashMap)
 import Data.Vector (Vector)
 import Data.Word.Word24 (Word24)
 import Data.Text (Text)
+import Data.UUID (UUID)
 
 -- | A BSON value is one of the following types of values
 data BsonValue = BsonValueDouble {-# UNPACK #-} !Double
@@ -56,7 +57,7 @@ data BsonObjectId = BsonObjectId
 
 data BsonBinary = BsonBinaryGeneric     S.ByteString
                 | BsonBinaryFunction    S.ByteString
-                | BsonBinaryUuid        S.ByteString
+                | BsonBinaryUuid        UUID
                 | BsonBinaryMd5         S.ByteString
                 | BsonBinaryUserDefined S.ByteString
     deriving (Eq, Show, Typeable)

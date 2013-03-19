@@ -10,6 +10,7 @@ import qualified Data.ByteString as S
 
 import Data.Text (Text)
 import Data.Word.Word24 (Word24)
+import Data.UUID (UUID, fromWords)
 import Test.QuickCheck (Positive(..), Arbitrary(..), oneof, resize)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Text as T
@@ -73,3 +74,6 @@ instance Arbitrary BsonObjectId where
 
 instance Arbitrary Word24 where
     arbitrary = fromInteger <$> arbitrary
+
+instance Arbitrary UUID where
+    arbitrary = fromWords <$> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary
