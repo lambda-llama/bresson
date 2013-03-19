@@ -155,7 +155,7 @@ putBsonBinary binary = do
     (tag, payload) = case binary of
         BsonBinaryGeneric a     -> (BSON_GENERIC_BINARY, a)
         BsonBinaryFunction a    -> (BSON_FUNCTION, a)
-        BsonBinaryUuid a        -> (BSON_UUID, L.toStrict $ UUID.toByteString a)
+        BsonBinaryUuid a        -> (BSON_UUID, lazyByteStringToStrict $ UUID.toByteString a)
         BsonBinaryMd5 a         -> (BSON_MD5, a)
         BsonBinaryUserDefined a -> (BSON_USER_DEFINED_BINARY, a)
 {-# INLINE putBsonBinary #-}
@@ -168,7 +168,7 @@ getBsonBinary = do
     case tag of
         BSON_GENERIC_BINARY -> return $ BsonBinaryGeneric bytes
         BSON_FUNCTION -> return $ BsonBinaryFunction bytes
-        BSON_UUID -> case UUID.fromByteString $ L.fromStrict bytes of
+        BSON_UUID -> case UUID.fromByteString $ strictByteStringToLazy bytes of
             Just uuid -> return $ BsonBinaryUuid uuid
             Nothing   -> fail "Invalid BSON binary uuid"
         BSON_MD5 -> return $ BsonBinaryMd5 bytes
@@ -269,3 +269,15 @@ getWord24le = do
     b3 <- fromIntegral <$> getWord8
     return $ fromInteger $ shiftL b3 16 .|. shiftL b2 8 .|. b1
 {-# INLINE getWord24le #-}
+
+lazyByteStringToStrict :: L.ByteString -> S.ByteString
+strictByteStringToLazy :: S.ByteString -> L.ByteString
+#if MIN_VERSION_bytestring(0, 10, 0)
+lazyByteStringToStrict = L.toStrict
+strictByteStringToLazy = L.fromStrict
+#else
+lazyByteStringToStrict = S.concat . L.toChunks
+strictByteStringToLazy = L.fromChunks . return
+#endif
+{-# INLINE lazyByteStringToStrict #-}
+{-# INLINE strictByteStringToLazy #-}
