@@ -1,4 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Main where
 
@@ -59,6 +60,6 @@ main = do
 
     createDirectoryIfMissing True optDest
 
-    forM_ [1..100] $ \n -> do
+    forM_ [1..100] $ \(n :: Int) -> do
         let file = optDest </> show n <.> "bson"
         generate optSize seed >>= LazyByteString.writeFile file . encode
