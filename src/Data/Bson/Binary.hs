@@ -168,12 +168,16 @@ getBsonBinary = do
     case tag of
         BSON_GENERIC_BINARY -> return $ BsonBinaryGeneric bytes
         BSON_FUNCTION -> return $ BsonBinaryFunction bytes
-        BSON_UUID -> case UUID.fromByteString $ strictByteStringToLazy bytes of
-            Just uuid -> return $ BsonBinaryUuid uuid
-            Nothing   -> fail "Invalid BSON binary uuid"
+        BSON_BINARY_OLD -> return $ BsonBinaryGeneric bytes
+        BSON_UUID_OLD -> mkUuid bytes
+        BSON_UUID -> mkUuid bytes
         BSON_MD5 -> return $ BsonBinaryMd5 bytes
         BSON_USER_DEFINED_BINARY -> return $ BsonBinaryUserDefined bytes
         _ -> fail $ printf "Invalid BSON binary subtype: %i" tag
+  where
+    mkUuid bytes = case UUID.fromByteString $ strictByteStringToLazy bytes of
+        Just uuid -> return $ BsonBinaryUuid uuid
+        Nothing   -> fail "Invalid BSON binary uuid"
 {-# INLINE getBsonBinary #-}
 
 putBsonObjectId :: BsonObjectId -> Put
