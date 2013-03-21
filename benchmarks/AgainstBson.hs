@@ -1,4 +1,5 @@
 {-# LANGUAGE PackageImports #-}
+{-# LANGUAGE CPP #-}
 
 module Main where
 
@@ -8,15 +9,20 @@ import Data.Binary (decode, encode)
 import Data.Binary.Get (runGet)
 import Data.Binary.Put (runPut)
 import System.Random (StdGen, newStdGen)
+import qualified Data.ByteString.Lazy as L
 
 import Criterion.Main (defaultMain, bench, nf)
 import Test.QuickCheck (arbitrary, resize)
 import Test.QuickCheck.Gen (unGen)
-import "bresson" Data.Bson ()  -- NFData instance for ByteString if missing
 import "bresson" Data.Bson.Binary ()
 import "bresson" Data.Bson.Tests.Instances ()
 import qualified "bresson" Data.Bson as Bresson
 import qualified "bson" Data.Bson.Binary as Bson
+
+#if !MIN_VERSION_bytestring(0,10,0)
+instance NFData ByteString where
+    rnf x = L.length x `seq` ()
+#endif
 
 testBresson :: [ByteString] -> [ByteString]
 testBresson = map (encode . (decode :: ByteString -> Bresson.BsonDocument))
