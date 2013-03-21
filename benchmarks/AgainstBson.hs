@@ -9,7 +9,10 @@ import Data.Binary (decode, encode)
 import Data.Binary.Get (runGet)
 import Data.Binary.Put (runPut)
 import System.Random (StdGen, newStdGen)
+#if !MIN_VERSION_bytestring(0,10,0)
+import Control.DeepSeq (NFData(..))
 import qualified Data.ByteString.Lazy as L
+#endif
 
 import Criterion.Main (defaultMain, bench, nf)
 import Test.QuickCheck (arbitrary, resize)
