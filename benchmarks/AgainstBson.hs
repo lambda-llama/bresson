@@ -12,6 +12,7 @@ import System.Random (StdGen, newStdGen)
 import Criterion.Main (defaultMain, bench, nf)
 import Test.QuickCheck (arbitrary, resize)
 import Test.QuickCheck.Gen (unGen)
+import "bresson" Data.Bson ()  -- NFData instance for ByteString if missing
 import "bresson" Data.Bson.Binary ()
 import "bresson" Data.Bson.Tests.Instances ()
 import qualified "bresson" Data.Bson as Bresson
