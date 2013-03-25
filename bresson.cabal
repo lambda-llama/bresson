@@ -15,6 +15,7 @@ Stability:          Alpha
 Build-type:         Simple
 Cabal-version:      >= 1.12
 Tested-with:        GHC == 7.6.*
+Extra-Source-Files: include/*.h
 
 Flag devtools
     Description: Compile with devtools, that means with benchmark against bson and bsongen utility
