@@ -25,17 +25,17 @@ import Data.UUID (UUID)
 
 -- | A BSON value is one of the following types of values
 data BsonValue = BsonValueDouble {-# UNPACK #-} !Double
-               | BsonValueString Text
-               | BsonValueDocument BsonDocument
-               | BsonValueArray BsonArray
-               | BsonValueBinary BsonBinary
-               | BsonValueObjectId BsonObjectId
-               | BsonValueBool Bool
-               | BsonValueUtcTime UTCTime
+               | BsonValueString {-# UNPACK #-} !Text
+               | BsonValueDocument !BsonDocument
+               | BsonValueArray {-# UNPACK #-} !BsonArray
+               | BsonValueBinary !BsonBinary
+               | BsonValueObjectId {-# UNPACK #-} !BsonObjectId
+               | BsonValueBool !Bool
+               | BsonValueUtcTime {-# UNPACK #-} !UTCTime
                | BsonValueNull
-               | BsonValueRegex Text Text
-               | BsonValueJavascript Text
-               | BsonValueJavascriptWithScope BsonDocument Text
+               | BsonValueRegex {-# UNPACK #-} !Text {-# UNPACK #-} !Text
+               | BsonValueJavascript {-# UNPACK #-} !Text
+               | BsonValueJavascriptWithScope !BsonDocument {-# UNPACK #-} !Text
                | BsonValueInt32 {-# UNPACK #-} !Int32
                | BsonValueInt64 {-# UNPACK #-} !Int64
                | BsonValueTimestamp {-# UNPACK #-} !Int64
@@ -55,9 +55,9 @@ data BsonObjectId = BsonObjectId
     , bsonObjectIdInc     :: {-# UNPACK #-} !Word24
     } deriving (Eq, Show, Typeable)
 
-data BsonBinary = BsonBinaryGeneric     S.ByteString
-                | BsonBinaryFunction    S.ByteString
-                | BsonBinaryUuid        UUID
-                | BsonBinaryMd5         S.ByteString
-                | BsonBinaryUserDefined S.ByteString
+data BsonBinary = BsonBinaryGeneric     {-# UNPACK #-} !S.ByteString
+                | BsonBinaryFunction    {-# UNPACK #-} !S.ByteString
+                | BsonBinaryUuid        {-# UNPACK #-} !UUID
+                | BsonBinaryMd5         {-# UNPACK #-} !S.ByteString
+                | BsonBinaryUserDefined {-# UNPACK #-} !S.ByteString
     deriving (Eq, Show, Typeable)
