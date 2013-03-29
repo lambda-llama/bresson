@@ -1,3 +1,6 @@
 language: haskell
 install: "cabal update && cabal install --only-dependencies --enable-tests --enable-benchmarks -fdevtools"
-script: "cabal configure --enable-tests --enable-benchmarks -fdevtools && cabal build && cabal test && cabal bench"
+script: ./travis.sh
+env:
+    global:
+      - secure: "tkYiKXHmxKrOfx8dHTj1HhcDoT9xS2mj1DHXKB57Dwgp6L8koNudZUidxOJ5\nCb4QKIGyKDw+KnTrcmXFzZEUyCxADqjAjuarbWyXT+An63dB/AU5jb6s+xKT\nDH7ipsgFXbuLAdbIUewPEKvGO4zaDAVvb9Sfpp7aiSnOZwgGCKA="
