@@ -14,9 +14,11 @@ rm -rf .git
 
 git clone https://${GH_TOKEN}@github.com/knsd/bresson.git
 
+cd bresson
+
 git checkout -b gh-pages origin/gh-pages
 
-mv new-index.html index.html
+mv ../new-index.html index.html
 
 git add index.html
 git commit -m "Travis build $TRAVIS_BUILD_NUMBER"
