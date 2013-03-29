@@ -1,5 +1,7 @@
 #! /bin/bash
 
+set -e
+
 cabal configure --enable-tests --enable-benchmarks -fdevtools
 cabal build
 cabal test
@@ -10,6 +12,8 @@ git config --global user.email "ci-bresson@knsd.net"
 
 git remote set-url origin https://${GH_TOKEN}@github.com/knsd/bresson.git
 
+git remote update
+git fetch
 git checkout -b gh-pages origin/gh-pages
 
 mv new-index.html index.html
