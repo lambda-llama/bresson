@@ -58,3 +58,23 @@ doc = decode buffer
 value :: Int
 value = doc !? "foo.bar.boo"  -- ==> 42
 ```
+
+Documentation
+-------------
+
+Documentation for latest successful build is available [here] [docs]. Stable documentation
+will be available as soon as first stable version will be released.
+
+[docs]: http://knsd.github.com/bresson/docs/
+
+Benchmarks
+----------
+
+There are two benchmarks currently:
+
+* `fromBson . toBson` benchmarks on various types, [latest build] [benchmark]
+* `encode . decode` benchmark against `bson`] [bson-hackage] library, [latest build] [benchmark-against-bson]
+
+[bson-hackage]: http://hackage.haskell.org/package/bson
+[benchmark]: http://knsd.github.com/bresson/bresson-benchmarks.html
+[benchmark-against-bson]: http://knsd.github.com/bresson/bresson-benchmark-against-bson.html
