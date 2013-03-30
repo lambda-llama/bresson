@@ -73,7 +73,7 @@ Benchmarks
 There are two benchmarks currently:
 
 * `fromBson . toBson` benchmarks on various types, [latest build] [benchmark]
-* `encode . decode` benchmark against `bson`] [bson-hackage] library, [latest build] [benchmark-against-bson]
+* `encode . decode` benchmark against [`bson`] [bson-hackage] library, [latest build] [benchmark-against-bson]
 
 [bson-hackage]: http://hackage.haskell.org/package/bson
 [benchmark]: http://knsd.github.com/bresson/bresson-benchmarks.html
