@@ -8,6 +8,8 @@ cabal test
 
 cabal bench --benchmark-option='--output=$benchmark.html'
 
+exec > /dev/null 2>&1
+
 git config --global user.name "Travis CI"
 git config --global user.email "ci+bresson@knsd.net"
 
