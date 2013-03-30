@@ -22,9 +22,11 @@ git clone https://${GH_TOKEN}@github.com/knsd/bresson.git
 cd bresson
 git checkout -b gh-pages origin/gh-pages
 
+rm -f *.html
 mv ../*.html .
 git add *.html
 
+rm -rf docs
 mv ../dist/doc/html/bresson docs
 git add docs
 
