@@ -150,6 +150,7 @@ Benchmark bresson-benchmark-against-bson
       , QuickCheck                 == 2.5.*
       , random                     == 1.0.*
       , bson                       == 0.2.2
+      , deepseq-th                 == 0.1.*
 
 Source-repository head
     Type:             git
