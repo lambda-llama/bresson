@@ -3,4 +3,4 @@ install: "cabal update && cabal install --only-dependencies --enable-tests --ena
 script: ./travis.sh
 env:
     global:
-      - secure: "fPIO7YCRm8JstGU70OlWV/tivjrVYnymk4M4EmnQRcSqkWD4X/feIviFwPn7\nl2YjOaFI3CfVL+dM/zqHG9e01lScrasKB+JbTpOiF+quMIWFd4Ei3GfGCxkk\nbggcE5dDfyAKkzFyB702EGCg4evnUioOQO7G+e4BkM0MSYusqFg="
+      - secure: "MHG5X8dB/MztR0GP23Gif9n71CiEy3bdHaTm8DeziF42ysF5QbPs0TD7q7EQ\nUxFSam4WpcbTnxIutnpos34pNoUjUe6u3nGw/nyHYB6zgWU8mbEGDZgbY3qc\ns+9DCSpE/M6NY+cO37JVmbvAhyHSLFQmSlYXS/qZXyR/eBwBAk8="
