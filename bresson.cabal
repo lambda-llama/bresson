@@ -8,8 +8,8 @@ Copyright:          Fedor Gogolev <knsd@knsd.net>
 Author:             Fedor Gogolev <knsd@knsd.net>
                     Sergei Lebedev <superbobry@gmail.com>
 Maintainer:         Fedor Gogolev <knsd@knsd.net>
-Homepage:           https://github.com/knsd/bresson
-Bug-reports:        https://github.com/knsd/bresson/issues
+Homepage:           https://github.com/lambda-llama/bresson
+Bug-reports:        https://github.com/lambda-llama/bresson/issues
 Category:           Data
 Stability:          Alpha
 Build-type:         Simple
@@ -154,4 +154,4 @@ Benchmark bresson-benchmark-against-bson
 
 Source-repository head
     Type:             git
-    Location:         https://github.com/knsd/bresson
+    Location:         https://github.com/lambda-llama/bresson

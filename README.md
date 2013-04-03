@@ -30,8 +30,8 @@ driver? Here's why:
 [hashtable]: http://hackage.haskell.org/package/unordered-containers-0.2.3.0
 [text]: http://hackage.haskell.org/package/text-0.11.2.3
 [ustring]: http://hackage.haskell.org/package/compact-string-fix-0.3.2
-[travis]: http://travis-ci.org/knsd/bresson
-[travis-img]: https://secure.travis-ci.org/knsd/bresson.png
+[travis]: http://travis-ci.org/lambda-llama/bresson
+[travis-img]: https://secure.travis-ci.org/lambda-llama/bresson.png
 
 Example
 -------
@@ -65,7 +65,7 @@ Documentation
 Documentation for latest successful build is available [here] [docs]. Stable documentation
 will be available as soon as first stable version will be released.
 
-[docs]: http://knsd.github.com/bresson/docs/
+[docs]: http://lambda-llama.github.com/bresson/docs/
 
 Benchmarks
 ----------
@@ -76,5 +76,5 @@ There are two benchmarks currently:
 * `encode . decode` benchmark against [`bson`] [bson-hackage] library, [latest build] [benchmark-against-bson]
 
 [bson-hackage]: http://hackage.haskell.org/package/bson
-[benchmark]: http://knsd.github.com/bresson/bresson-benchmarks.html
-[benchmark-against-bson]: http://knsd.github.com/bresson/bresson-benchmark-against-bson.html
+[benchmark]: http://lambda-llama.github.com/bresson/bresson-benchmarks.html
+[benchmark-against-bson]: http://lambda-llama.github.com/bresson/bresson-benchmark-against-bson.html

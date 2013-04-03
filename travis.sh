@@ -17,7 +17,7 @@ exec > /dev/null 2>&1
 git config --global user.name "Travis CI"
 git config --global user.email "ci+bresson@knsd.net"
 
-git clone https://${GH_TOKEN}@github.com/knsd/bresson.git
+git clone https://${GH_TOKEN}@github.com/lambda-llama/bresson.git
 
 cd bresson
 git checkout -b gh-pages origin/gh-pages
