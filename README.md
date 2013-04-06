@@ -65,7 +65,7 @@ Documentation
 Documentation for latest successful build is available [here] [docs]. Stable documentation
 will be available as soon as first stable version will be released.
 
-[docs]: http://lambda-llama.github.com/bresson/docs/
+[docs]: http://lambda-llama.github.io/bresson/docs/
 
 Benchmarks
 ----------
@@ -76,5 +76,5 @@ There are two benchmarks currently:
 * `encode . decode` benchmark against [`bson`] [bson-hackage] library, [latest build] [benchmark-against-bson]
 
 [bson-hackage]: http://hackage.haskell.org/package/bson
-[benchmark]: http://lambda-llama.github.com/bresson/bresson-benchmarks.html
-[benchmark-against-bson]: http://lambda-llama.github.com/bresson/bresson-benchmark-against-bson.html
+[benchmark]: http://lambda-llama.github.io/bresson/bresson-benchmarks.html
+[benchmark-against-bson]: http://lambda-llama.github.io/bresson/bresson-benchmark-against-bson.html
