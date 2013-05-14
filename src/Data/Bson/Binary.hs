@@ -10,7 +10,7 @@ module Data.Bson.Binary () where
 #include "bson.h"
 
 import Prelude hiding (length, concat)
-import Control.Applicative ((<$>), (<*>))
+import Control.Applicative ((<$>), (<*>), (*>))
 import Data.Binary (Binary(..))
 import Data.Binary.Get (Get, runGet, getWord8, getWord16le,
                         getWord32le, getWord64le, getLazyByteStringNul,
@@ -110,9 +110,9 @@ putAsDocument p = do
 {-# INLINE putAsDocument #-}
 
 putBsonDocument :: BsonDocument -> Put
-putBsonDocument doc = putAsDocument $ sequence_ $ HashMap.foldlWithKey' f [] doc
+putBsonDocument doc = putAsDocument $ HashMap.foldlWithKey' f (return ()) doc
   where
-    f a k v = putBsonField k v : a
+    f a k v = a *> putBsonField k v
 {-# INLINE putBsonDocument #-}
 
 getBsonDocument :: Get BsonDocument
@@ -141,7 +141,7 @@ getBsonArray :: Get BsonArray
 getBsonArray = getBsonDocument >>= \doc ->
     return $ Vector.unfoldr (f doc (HashMap.size doc)) 0
   where
-    f doc s c | c >= s     = Nothing
+    f doc s c | c >= s    = Nothing
               | otherwise = HashMap.lookup (intToText c) doc >>=
                      Just . (, c + 1)
 {-# INLINE getBsonArray #-}
