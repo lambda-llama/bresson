@@ -18,12 +18,13 @@ import Data.Binary.Get (Get, runGet, getWord8, getWord16le,
 import Data.Binary.Put (Put, runPut, putWord8, putWord16le, putWord32le,
                         putWord64le, putLazyByteString, putByteString)
 import Data.Bits (shiftL, shiftR, (.|.))
+import Data.Foldable (for_)
 import Data.Time.Clock (UTCTime)
 import Data.Time.Clock.POSIX (posixSecondsToUTCTime, utcTimeToPOSIXSeconds)
 import Text.Printf (printf)
 
 import qualified Data.ByteString as S
-import qualified Data.ByteString.Lazy as L
+import qualified Data.ByteString.Lazy.Char8 as L
 
 import Data.Binary.IEEE754 (getFloat64le, putFloat64le)
 import Data.Text (Text)
@@ -31,7 +32,6 @@ import Data.Text.Lazy.Builder.Int (decimal)
 import Data.Word.Word24 (Word24)
 import qualified Data.BitSet.Word as BitSet
 import qualified Data.HashMap.Strict as HashMap
-import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Builder as TL
 import qualified Data.Text.Encoding as TE
@@ -209,9 +209,8 @@ getBsonUtcTime = do
 {-# INLINE getBsonUtcTime #-}
 
 putBsonRegexOptions :: BsonRegexOptions -> Put
-putBsonRegexOptions = putBsonCString . BitSet.foldl' f ""
+putBsonRegexOptions opts = for_ opts (put . match) *> putWord8 0x00
   where
-    f c = T.snoc c . match
     match BsonRegexOptionCaseInsensitive = 'i'
     match BsonRegexOptionLocaleDependent = 'l'
     match BsonRegexOptionMultiline       = 'm'
@@ -221,7 +220,7 @@ putBsonRegexOptions = putBsonCString . BitSet.foldl' f ""
 {-# INLINE putBsonRegexOptions #-}
 
 getBsonRegexOptions :: Get BsonRegexOptions
-getBsonRegexOptions = fmap (T.foldl' f BitSet.empty) getBsonCString
+getBsonRegexOptions = fmap (L.foldl' f BitSet.empty) getLazyByteStringNul
   where
     f c = flip BitSet.insert c . match
     match 'i' = BsonRegexOptionCaseInsensitive
@@ -260,8 +259,7 @@ putBsonCString s = do
 {-# INLINE putBsonCString #-}
 
 getBsonCString :: Get Text
-getBsonCString =
-    TE.decodeUtf8 . S.concat . L.toChunks <$> getLazyByteStringNul
+getBsonCString = TE.decodeUtf8 . S.concat . L.toChunks <$> getLazyByteStringNul
 {-# INLINE getBsonCString #-}
 
 putBsonString :: Text -> Put
