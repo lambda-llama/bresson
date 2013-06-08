@@ -1,7 +1,9 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 
 module Data.Bson.Types
-    ( BsonValue(..)
+    ( BsonRegexOption(..)
+    , BsonRegexOptions
+    , BsonValue(..)
     , BsonBinary(..)
     , BsonObjectId(..)
     , BsonDocument
@@ -17,11 +19,24 @@ import Data.Typeable (Typeable)
 import Data.Word (Word32, Word16)
 import qualified Data.ByteString as S
 
+import Data.BitSet.Word (BitSet)
 import Data.HashMap.Strict (HashMap)
 import Data.Vector (Vector)
 import Data.Word.Word24 (Word24)
 import Data.Text (Text)
 import Data.UUID (UUID)
+
+-- | Options for 'BsonValueRegex', constructors order is important because
+-- it's binary representation should be encoded in alphabetical order.
+data BsonRegexOption = BsonRegexOptionCaseInsensitive -- i
+                     | BsonRegexOptionLocaleDependent -- l
+                     | BsonRegexOptionMultiline       -- m
+                     | BsonRegexOptionDotall          -- s
+                     | BsonRegexOptionUnicode         -- u
+                     | BsonRegexOptionVerbose         -- x
+    deriving (Eq, Show, Typeable, Enum)
+
+type BsonRegexOptions = BitSet BsonRegexOption
 
 -- | A BSON value is one of the following types of values
 data BsonValue = BsonValueDouble {-# UNPACK #-} !Double
@@ -33,7 +48,7 @@ data BsonValue = BsonValueDouble {-# UNPACK #-} !Double
                | BsonValueBool !Bool
                | BsonValueUtcTime {-# UNPACK #-} !UTCTime
                | BsonValueNull
-               | BsonValueRegex {-# UNPACK #-} !Text {-# UNPACK #-} !Text
+               | BsonValueRegex {-# UNPACK #-} !Text !BsonRegexOptions
                | BsonValueJavascript {-# UNPACK #-} !Text
                | BsonValueJavascriptWithScope !BsonDocument {-# UNPACK #-} !Text
                | BsonValueInt32 {-# UNPACK #-} !Int32

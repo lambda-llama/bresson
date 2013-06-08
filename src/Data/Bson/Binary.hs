@@ -29,7 +29,9 @@ import Data.Binary.IEEE754 (getFloat64le, putFloat64le)
 import Data.Text (Text)
 import Data.Text.Lazy.Builder.Int (decimal)
 import Data.Word.Word24 (Word24)
+import qualified Data.BitSet.Word as BitSet
 import qualified Data.HashMap.Strict as HashMap
+import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Builder as TL
 import qualified Data.Text.Encoding as TE
@@ -37,7 +39,8 @@ import qualified Data.Vector as Vector
 import qualified Data.UUID as UUID
 
 import Data.Bson.Types (BsonDocument, BsonArray, BsonLabel, BsonValue(..),
-                        BsonBinary(..), BsonObjectId(..))
+                        BsonBinary(..), BsonObjectId(..),
+                        BsonRegexOption(..), BsonRegexOptions)
 
 instance Binary BsonDocument where
     put = putBsonDocument
@@ -61,7 +64,7 @@ putBsonField key value = do
         BsonValueUtcTime a    -> (BSON_UTC, putBsonUtcTime a)
         BsonValueNull         -> (BSON_NULL, return ())
         BsonValueRegex a b    ->
-            (BSON_REGEX, putBsonCString a >> putBsonCString b)
+            (BSON_REGEX, putBsonCString a >> putBsonRegexOptions b)
         BsonValueJavascript a -> (BSON_JS, putBsonString a)
         BsonValueJavascriptWithScope a b ->
             (BSON_JS_WITH_SCOPE, putBsonJsWithScope a b)
@@ -86,7 +89,7 @@ getBsonField = do
         BSON_BOOLEAN   -> BsonValueBool <$> getBsonBool
         BSON_UTC       -> BsonValueUtcTime <$> getBsonUtcTime
         BSON_NULL      -> return BsonValueNull
-        BSON_REGEX     -> BsonValueRegex <$> getBsonCString <*> getBsonCString
+        BSON_REGEX     -> BsonValueRegex <$> getBsonCString <*> getBsonRegexOptions
         BSON_JS        -> BsonValueJavascript <$> getBsonString
         BSON_JS_WITH_SCOPE ->
             uncurry BsonValueJavascriptWithScope <$> getBsonJsWithScope
@@ -205,6 +208,31 @@ getBsonUtcTime = do
     return $ posixSecondsToUTCTime $ fromInteger $ time `div` 1000
 {-# INLINE getBsonUtcTime #-}
 
+putBsonRegexOptions :: BsonRegexOptions -> Put
+putBsonRegexOptions = putBsonCString . BitSet.foldl' f ""
+  where
+    f c = T.snoc c . match
+    match BsonRegexOptionCaseInsensitive = 'i'
+    match BsonRegexOptionLocaleDependent = 'l'
+    match BsonRegexOptionMultiline       = 'm'
+    match BsonRegexOptionDotall          = 's'
+    match BsonRegexOptionUnicode         = 'u'
+    match BsonRegexOptionVerbose         = 'x'
+{-# INLINE putBsonRegexOptions #-}
+
+getBsonRegexOptions :: Get BsonRegexOptions
+getBsonRegexOptions = fmap (T.foldl' f BitSet.empty) getBsonCString
+  where
+    f c = flip BitSet.insert c . match
+    match 'i' = BsonRegexOptionCaseInsensitive
+    match 'l' = BsonRegexOptionLocaleDependent
+    match 'm' = BsonRegexOptionMultiline
+    match 's' = BsonRegexOptionDotall
+    match 'u' = BsonRegexOptionUnicode
+    match 'x' = BsonRegexOptionVerbose
+    match v   = error $ printf "Invalind BSON regex option: %c" v
+{-# INLINE getBsonRegexOptions #-}
+
 putBsonJsWithScope :: BsonDocument -> Text -> Put
 putBsonJsWithScope doc code = do
     putWord32le $ fromIntegral $ L.length bytes + 4
@@ -256,7 +284,7 @@ getBsonBool :: Get Bool
 getBsonBool = getWord8 >>= \v -> case v of
     0x00 -> return False
     0x01 -> return True
-    _    -> fail $ printf "Invalind BSON boolean: " v
+    _    -> fail $ printf "Invalind BSON boolean: %i" v
 {-# INLINE getBsonBool #-}
 
 putWord24le :: Word24 -> Put

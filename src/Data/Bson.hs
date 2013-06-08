@@ -6,5 +6,6 @@ module Data.Bson
 
 import Data.Bson.Class (ToBson(..), FromBson(..))
 import Data.Bson.Types (BsonDocument, BsonLabel, BsonValue(..),
-                        BsonBinary(..), BsonObjectId(..), BsonArray)
+                        BsonBinary(..), BsonObjectId(..), BsonArray,
+                        BsonRegexOption(..), BsonRegexOptions)
 import Data.Bson.Utils (document, (!?), (=:))
