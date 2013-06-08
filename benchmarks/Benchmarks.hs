@@ -9,8 +9,7 @@ import Data.Text (Text)
 import Test.QuickCheck (Arbitrary, arbitrary, resize)
 import Test.QuickCheck.Gen (unGen)
 
-import Data.Bson (FromBson(..), ToBson(..), BsonDocument, BsonValue,
-                  BsonBinary, BsonObjectId, BsonArray)
+import Data.Bson (FromBson(..), ToBson(..), BsonDocument)
 import Data.Bson.Tests.Instances ()
 
 main :: IO ()
@@ -37,7 +36,7 @@ main = do
     f :: (FromBson a, ToBson a) => a -> a
     f x = case fromBson $ toBson x of
         Left _  -> error "fromBson"
-        Right x -> x
+        Right a -> a
 
     generate  :: (FromBson a, ToBson a, Arbitrary a) => StdGen -> a
     generate stdGen = unGen (resize n arbitrary) stdGen seed
