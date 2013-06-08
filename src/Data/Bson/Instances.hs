@@ -129,7 +129,6 @@ unexpectedBsonValue expected v =
         BsonValueTimestamp _i  -> "Timestamp"
         BsonValueMin         -> "Min key"
         BsonValueMax         -> "Max key"
-
 {-# INLINE unexpectedBsonValue #-}
 
 instance FromBson BsonValue where
