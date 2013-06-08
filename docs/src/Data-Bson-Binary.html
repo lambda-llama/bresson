@@ -241,24 +241,24 @@
 <a name="line-232"></a>    <span class='hs-varid'>match</span> <span class='hs-varid'>v</span>   <span class='hs-keyglyph'>=</span> <span class='hs-varid'>error</span> <span class='hs-varop'>$</span> <span class='hs-varid'>printf</span> <span class='hs-str'>"Invalind BSON regex option: %c"</span> <span class='hs-varid'>v</span>
 <a name="line-233"></a><span class='hs-comment'>{-# INLINE getBsonRegexOptions #-}</span>
 <a name="line-234"></a>
-<a name="line-235"></a><a name="putBsonJsWithScope"></a><span class='hs-definition'>putBsonJsWithScope</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>BsonDocument</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Text</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Put</span>
-<a name="line-236"></a><span class='hs-definition'>putBsonJsWithScope</span> <span class='hs-varid'>doc</span> <span class='hs-varid'>code</span> <span class='hs-keyglyph'>=</span> <span class='hs-keyword'>do</span>
+<a name="line-235"></a><a name="putBsonJsWithScope"></a><span class='hs-definition'>putBsonJsWithScope</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Text</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>BsonDocument</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Put</span>
+<a name="line-236"></a><span class='hs-definition'>putBsonJsWithScope</span> <span class='hs-varid'>code</span> <span class='hs-varid'>document</span> <span class='hs-keyglyph'>=</span> <span class='hs-keyword'>do</span>
 <a name="line-237"></a>    <span class='hs-varid'>putWord32le</span> <span class='hs-varop'>$</span> <span class='hs-varid'>fromIntegral</span> <span class='hs-varop'>$</span> <span class='hs-conid'>L</span><span class='hs-varop'>.</span><span class='hs-varid'>length</span> <span class='hs-varid'>bytes</span> <span class='hs-varop'>+</span> <span class='hs-num'>4</span>
 <a name="line-238"></a>    <span class='hs-varid'>putLazyByteString</span> <span class='hs-varid'>bytes</span>
 <a name="line-239"></a>  <span class='hs-keyword'>where</span>
 <a name="line-240"></a>      <span class='hs-varid'>bytes</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>runPut</span> <span class='hs-varop'>$</span> <span class='hs-keyword'>do</span>
 <a name="line-241"></a>          <span class='hs-varid'>putBsonString</span> <span class='hs-varid'>code</span>
-<a name="line-242"></a>          <span class='hs-varid'>putBsonDocument</span> <span class='hs-varid'>doc</span>
+<a name="line-242"></a>          <span class='hs-varid'>putBsonDocument</span> <span class='hs-varid'>document</span>
 <a name="line-243"></a><span class='hs-comment'>{-# INLINE putBsonJsWithScope #-}</span>
 <a name="line-244"></a>
-<a name="line-245"></a><a name="getBsonJsWithScope"></a><span class='hs-definition'>getBsonJsWithScope</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Get</span> <span class='hs-layout'>(</span><span class='hs-conid'>BsonDocument</span><span class='hs-layout'>,</span> <span class='hs-conid'>Text</span><span class='hs-layout'>)</span>
+<a name="line-245"></a><a name="getBsonJsWithScope"></a><span class='hs-definition'>getBsonJsWithScope</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Get</span> <span class='hs-layout'>(</span><span class='hs-conid'>Text</span><span class='hs-layout'>,</span> <span class='hs-conid'>BsonDocument</span><span class='hs-layout'>)</span>
 <a name="line-246"></a><span class='hs-definition'>getBsonJsWithScope</span> <span class='hs-keyglyph'>=</span> <span class='hs-keyword'>do</span>
 <a name="line-247"></a>    <span class='hs-varid'>len</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>fromIntegral</span> <span class='hs-varop'>&lt;$&gt;</span> <span class='hs-varid'>getWord32le</span>
 <a name="line-248"></a>    <span class='hs-varid'>bytes</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>getLazyByteString</span> <span class='hs-varop'>$</span> <span class='hs-varid'>len</span> <span class='hs-comment'>-</span> <span class='hs-num'>4</span>
 <a name="line-249"></a>    <span class='hs-varid'>return</span> <span class='hs-varop'>$</span> <span class='hs-varid'>flip</span> <span class='hs-varid'>runGet</span> <span class='hs-varid'>bytes</span> <span class='hs-varop'>$</span> <span class='hs-keyword'>do</span>
 <a name="line-250"></a>        <span class='hs-varid'>code</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>getBsonString</span>
 <a name="line-251"></a>        <span class='hs-varid'>document</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>getBsonDocument</span>
-<a name="line-252"></a>        <span class='hs-varid'>return</span> <span class='hs-layout'>(</span><span class='hs-varid'>document</span><span class='hs-layout'>,</span> <span class='hs-varid'>code</span><span class='hs-layout'>)</span>
+<a name="line-252"></a>        <span class='hs-varid'>return</span> <span class='hs-layout'>(</span><span class='hs-varid'>code</span><span class='hs-layout'>,</span> <span class='hs-varid'>document</span><span class='hs-layout'>)</span>
 <a name="line-253"></a><span class='hs-comment'>{-# INLINE getBsonJsWithScope #-}</span>
 <a name="line-254"></a>
 <a name="line-255"></a><a name="putBsonCString"></a><span class='hs-definition'>putBsonCString</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Text</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Put</span>
