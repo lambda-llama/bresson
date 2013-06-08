@@ -50,7 +50,7 @@ data BsonValue = BsonValueDouble {-# UNPACK #-} !Double
                | BsonValueNull
                | BsonValueRegex {-# UNPACK #-} !Text !BsonRegexOptions
                | BsonValueJavascript {-# UNPACK #-} !Text
-               | BsonValueJavascriptWithScope !BsonDocument {-# UNPACK #-} !Text
+               | BsonValueJavascriptWithScope {-# UNPACK #-} !Text !BsonDocument
                | BsonValueInt32 {-# UNPACK #-} !Int32
                | BsonValueInt64 {-# UNPACK #-} !Int64
                | BsonValueTimestamp {-# UNPACK #-} !Int64

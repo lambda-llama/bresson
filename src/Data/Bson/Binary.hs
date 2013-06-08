@@ -232,24 +232,24 @@ getBsonRegexOptions = fmap (L.foldl' f BitSet.empty) getLazyByteStringNul
     match v   = error $ printf "Invalind BSON regex option: %c" v
 {-# INLINE getBsonRegexOptions #-}
 
-putBsonJsWithScope :: BsonDocument -> Text -> Put
-putBsonJsWithScope doc code = do
+putBsonJsWithScope :: Text -> BsonDocument -> Put
+putBsonJsWithScope code document = do
     putWord32le $ fromIntegral $ L.length bytes + 4
     putLazyByteString bytes
   where
       bytes = runPut $ do
           putBsonString code
-          putBsonDocument doc
+          putBsonDocument document
 {-# INLINE putBsonJsWithScope #-}
 
-getBsonJsWithScope :: Get (BsonDocument, Text)
+getBsonJsWithScope :: Get (Text, BsonDocument)
 getBsonJsWithScope = do
     len <- fromIntegral <$> getWord32le
     bytes <- getLazyByteString $ len - 4
     return $ flip runGet bytes $ do
         code <- getBsonString
         document <- getBsonDocument
-        return (document, code)
+        return (code, document)
 {-# INLINE getBsonJsWithScope #-}
 
 putBsonCString :: Text -> Put
