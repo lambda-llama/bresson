@@ -22,7 +22,6 @@ tests :: Test
 tests = testGroup "Data.Bson.Instances.Tests"
     [ testProperty "BsonValue" (testToFromBson :: BsonValue -> Bool)
     , testProperty "Text" (testToFromBson :: Text -> Bool)
-    -- , testProperty "String" (testToFromBson :: String -> Bool)
     , testProperty "Strict ByteString" (testToFromBson :: S.ByteString -> Bool)
     , testProperty "Bool" (testToFromBson :: Bool -> Bool)
     , testProperty "Int8" (testToFromBson :: Int8 -> Bool)
