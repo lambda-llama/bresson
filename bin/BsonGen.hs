@@ -19,7 +19,6 @@ import Test.QuickCheck.Gen (unGen)
 import qualified Data.ByteString.Lazy as LazyByteString
 
 import Data.Bson (BsonDocument)
-import Data.Bson.Binary ()
 import Data.Bson.Tests.Instances ()
 
 data Options = Options

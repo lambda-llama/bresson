@@ -15,7 +15,6 @@ import qualified Data.ByteString.Lazy as L
 
 import Criterion.Main (defaultMain, bgroup, bench, nf)
 import Control.DeepSeq.TH (deriveNFDatas)
-import "bresson" Data.Bson.Binary ()
 import "bresson" Data.Bson.Tests.Instances ()
 import qualified "bresson" Data.Bson as Bresson
 import qualified "bson" Data.Bson as Bson
