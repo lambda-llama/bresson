@@ -5,7 +5,28 @@
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE CPP #-}
 
-module Data.Bson.Binary () where
+module Data.Bson.Binary
+    ( putBsonField
+    , getBsonField
+    , putBsonDocument
+    , getBsonDocument
+    , putBsonArray
+    , getBsonArray
+    , putBsonBinary
+    , getBsonBinary
+    , putBsonObjectId
+    , getBsonObjectId
+    , putBsonUtcTime
+    , getBsonUtcTime
+    , putBsonRegexOptions
+    , getBsonRegexOptions
+    , putBsonJsWithScope
+    , getBsonJsWithScope
+    , putBsonCString
+    , getBsonCString
+    , putBsonString
+    , getBsonString
+    ) where
 
 #include "bson.h"
 
@@ -129,10 +150,6 @@ getBsonDocument = do
         else (:) <$> getBsonField
                  <*> getFields
 {-# INLINE getBsonDocument #-}
-
-intToText :: Int -> Text
-intToText = TL.toStrict . TL.toLazyText . decimal
-{-# INLINE intToText #-}
 
 putBsonArray :: BsonArray -> Put
 putBsonArray array = putAsDocument $ Vector.zipWithM_ putBsonField inf array
@@ -299,6 +316,10 @@ getWord24le = do
     b3 <- fromIntegral <$> getWord8
     return $ fromInteger $ shiftL b3 16 .|. shiftL b2 8 .|. b1
 {-# INLINE getWord24le #-}
+
+intToText :: Int -> Text
+intToText = TL.toStrict . TL.toLazyText . decimal
+{-# INLINE intToText #-}
 
 lazyByteStringToStrict :: L.ByteString -> S.ByteString
 strictByteStringToLazy :: S.ByteString -> L.ByteString
