@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE CPP #-}
 
 module Data.Bson.Types
     ( BsonRegexOption(..)
@@ -48,7 +49,11 @@ data BsonValue = BsonValueDouble {-# UNPACK #-} !Double
                | BsonValueBool !Bool
                | BsonValueUtcTime {-# UNPACK #-} !UTCTime
                | BsonValueNull
+#if defined(__GLASGOW_HASKELL__) && (__GLASGOW_HASKELL__ >= 708)
+               | BsonValueRegex {-# UNPACK #-} !Text {-# UNPACK #-} !BsonRegexOptions
+#else
                | BsonValueRegex {-# UNPACK #-} !Text !BsonRegexOptions
+#endif
                | BsonValueJavascript {-# UNPACK #-} !Text
                | BsonValueJavascriptWithScope {-# UNPACK #-} !Text !BsonDocument
                | BsonValueInt32 {-# UNPACK #-} !Int32
