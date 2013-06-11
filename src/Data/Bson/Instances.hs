@@ -13,7 +13,7 @@ import Control.DeepSeq (NFData(..))
 #if !MIN_VERSION_bytestring(0,10,0)
 import Data.ByteString (ByteString)
 #endif
-import Data.Int (Int16, Int8, Int32, Int64)
+import Data.Int (Int8, Int16, Int32, Int64)
 import Data.Time.Clock (UTCTime)
 import qualified Data.ByteString as S
 
