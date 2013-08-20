@@ -4,8 +4,8 @@ module Data.Bson.Utils.Tests
     ( tests
     ) where
 
-import Test.Framework (Test, testGroup)
-import Test.Framework.Providers.QuickCheck2 (testProperty)
+import Test.Tasty (TestTree, testGroup)
+import Test.Tasty.QuickCheck (testProperty)
 import Test.QuickCheck (Property, (==>))
 import qualified Data.Text as ST
 
@@ -24,7 +24,7 @@ testRecursiveLookup labels v =
     BsonValueDocument doc =
         foldr (\l acc -> BsonValueDocument $ document [l =: acc]) v labels
 
-tests :: Test
+tests :: TestTree
 tests = testGroup "Data.Bson.Utils.Tests"
     [ testProperty "testRecursiveLookup" testRecursiveLookup
     ]

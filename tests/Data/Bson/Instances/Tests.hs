@@ -7,8 +7,8 @@ import Data.Time.Clock (UTCTime)
 import qualified Data.ByteString as S
 
 import Data.Text (Text)
-import Test.Framework (Test, testGroup)
-import Test.Framework.Providers.QuickCheck2 (testProperty)
+import Test.Tasty (TestTree, testGroup)
+import Test.Tasty.QuickCheck (testProperty)
 
 import Data.Bson (BsonValue, ToBson(..), FromBson(..))
 import Data.Bson.Tests.Instances ()
@@ -18,7 +18,7 @@ testToFromBson a = case fromBson . toBson $ a of
     Left _ -> False
     Right a' -> a == a'
 
-tests :: Test
+tests :: TestTree
 tests = testGroup "Data.Bson.Instances.Tests"
     [ testProperty "BsonValue" (testToFromBson :: BsonValue -> Bool)
     , testProperty "Text" (testToFromBson :: Text -> Bool)
