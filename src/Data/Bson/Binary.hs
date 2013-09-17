@@ -31,7 +31,7 @@ module Data.Bson.Binary
 #include "bson.h"
 
 import Prelude hiding (length, concat)
-import Control.Applicative ((<$>), (<*>), (*>))
+import Control.Applicative (pure, (<$>), (<*>), (*>))
 import Data.Binary (Binary(..))
 import Data.Binary.Get (Get, runGet, getWord8, getWord16le,
                         getWord32le, getWord64le, getLazyByteStringNul,
@@ -39,7 +39,6 @@ import Data.Binary.Get (Get, runGet, getWord8, getWord16le,
 import Data.Binary.Put (Put, runPut, putWord8, putWord16le, putWord32le,
                         putWord64le, putLazyByteString, putByteString)
 import Data.Bits (shiftL, shiftR, (.|.))
-import Data.Foldable (for_)
 import Data.Time.Clock (UTCTime)
 import Data.Time.Clock.POSIX (posixSecondsToUTCTime, utcTimeToPOSIXSeconds)
 import Text.Printf (printf)
@@ -226,8 +225,9 @@ getBsonUtcTime = do
 {-# INLINE getBsonUtcTime #-}
 
 putBsonRegexOptions :: BsonRegexOptions -> Put
-putBsonRegexOptions opts = for_ opts (put . match) *> putWord8 0x00
+putBsonRegexOptions opts = BitSet.foldl' f (pure ()) opts *> putWord8 0x00
   where
+    f a v = (put $ match v) *> a
     match BsonRegexOptionCaseInsensitive = 'i'
     match BsonRegexOptionLocaleDependent = 'l'
     match BsonRegexOptionMultiline       = 'm'
