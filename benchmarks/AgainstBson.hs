@@ -36,11 +36,11 @@ deriving instance NFData Bson.MongoStamp
 $(deriveNFDatas [''Bson.Value, ''Bson.MinMaxKey, ''Bson.Regex,
                  ''Bson.Javascript, ''Bson.ObjectId, ''Bson.Field])
 
-encodeBresson :: Bresson.BsonDocument -> ByteString
+encodeBresson :: Bresson.Document -> ByteString
 encodeBresson = encode
 {-# INLINE encodeBresson #-}
 
-decodeBresson :: ByteString -> Bresson.BsonDocument
+decodeBresson :: ByteString -> Bresson.Document
 decodeBresson = decode
 {-# INLINE decodeBresson #-}
 

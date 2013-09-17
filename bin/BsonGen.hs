@@ -18,7 +18,7 @@ import Test.QuickCheck (Arbitrary, arbitrary, resize)
 import Test.QuickCheck.Gen (unGen)
 import qualified Data.ByteString.Lazy as LazyByteString
 
-import Data.Bson (BsonDocument)
+import Data.Bson (Document)
 import Data.Bson.Tests.Instances ()
 
 data Options = Options
@@ -46,7 +46,7 @@ options = info (helper <*> parser) fullDesc
                    <> showDefault)
         <*> argument str ( metavar "FILE" )
 
-generate :: Int -> Int -> IO BsonDocument
+generate :: Int -> Int -> IO Document
 generate size seed = newStdGen >>= \gen ->
     return $ unGen (resize size arbitrary) gen seed
 

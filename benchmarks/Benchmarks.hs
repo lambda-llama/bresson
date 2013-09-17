@@ -9,7 +9,7 @@ import Data.Text (Text)
 import Test.QuickCheck (Arbitrary, arbitrary, resize)
 import Test.QuickCheck.Gen (unGen)
 
-import Data.Bson (FromBson(..), ToBson(..), BsonDocument)
+import Data.Bson (FromBson(..), ToBson(..), Document)
 import Data.Bson.Tests.Instances ()
 
 main :: IO ()
@@ -19,7 +19,7 @@ main = do
         [ bgroup "fromBson . toBson"
           [ bench "Double" (whnf f (generate stdGen :: Double))
           , bench "Text" (whnf f (generate stdGen :: Text))
-          , bench "Document" (whnf f (generate stdGen :: BsonDocument))
+          , bench "Document" (whnf f (generate stdGen :: Document))
           , bench "Bool" (whnf f (generate stdGen :: Bool))
           , bench "UTCTime" (whnf f (generate stdGen :: UTCTime))
           , bench "Int32" (whnf f (generate stdGen :: Int32))

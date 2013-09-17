@@ -101,8 +101,8 @@ Test-suite bresson-tests
       , uuid                 == 1.2.*
       , bresson
 
-      , tasty                == 0.1.*
-      , tasty-quickcheck     == 0.1
+      , tasty                == 0.3.*
+      , tasty-quickcheck     == 0.3.*
       , QuickCheck           == 2.*
 
 Benchmark bresson-benchmarks

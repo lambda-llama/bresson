@@ -14,27 +14,27 @@ import qualified Data.HashMap.Strict as HashMap
 
 import Data.Bson.Class (FromBson(..), ToBson(..))
 import Data.Bson.Instances ()
-import Data.Bson.Types (BsonLabel, BsonDocument, BsonField)
+import Data.Bson.Types (Label, Document, Field)
 
-document :: [BsonField] -> BsonDocument
+document :: [Field] -> Document
 document = HashMap.fromList
 {-# INLINE document #-}
 
-lookup :: FromBson a => BsonLabel -> BsonDocument -> Maybe a
+lookup :: FromBson a => Label -> Document -> Maybe a
 lookup label doc = do
     v <- HashMap.lookup label doc
     either (const Nothing) Just $! fromBson v
 
 -- | Recursively lookup a nested field in a Document.
-(!?) :: FromBson a => BsonDocument -> BsonLabel -> Maybe a
+(!?) :: FromBson a => Document -> Label -> Maybe a
 doc !? label = do
     inner <- foldM (flip lookup) doc (init chunks)
     lookup (last chunks) inner
   where
-    chunks :: [BsonLabel]
+    chunks :: [Label]
     chunks = ST.splitOn "." label
 {-# INLINE (!?) #-}
 
-(=:) :: ToBson a => BsonLabel -> a -> BsonField
+(=:) :: ToBson a => Label -> a -> Field
 label =: v = (label, toBson v)
 {-# INLINE (=:) #-}

@@ -2,15 +2,15 @@
 {-# LANGUAGE CPP #-}
 
 module Data.Bson.Types
-    ( BsonRegexOption(..)
-    , BsonRegexOptions
-    , BsonValue(..)
-    , BsonBinary(..)
-    , BsonObjectId(..)
-    , BsonDocument
-    , BsonArray
-    , BsonLabel
-    , BsonField
+    ( RegexOption(..)
+    , RegexOptions
+    , Value(..)
+    , Binary(..)
+    , ObjectId(..)
+    , Document
+    , Array
+    , Label
+    , Field
     ) where
 
 import Data.Int (Int32, Int64)
@@ -27,57 +27,57 @@ import Data.Word.Word24 (Word24)
 import Data.Text (Text)
 import Data.UUID (UUID)
 
--- | Options for 'BsonValueRegex', constructors order is important because
+-- | Options for 'ValueRegex', constructors order is important because
 -- it's binary representation should be encoded in alphabetical order.
-data BsonRegexOption = BsonRegexOptionCaseInsensitive -- i
-                     | BsonRegexOptionLocaleDependent -- l
-                     | BsonRegexOptionMultiline       -- m
-                     | BsonRegexOptionDotall          -- s
-                     | BsonRegexOptionUnicode         -- u
-                     | BsonRegexOptionVerbose         -- x
+data RegexOption = RegexOptionCaseInsensitive -- i
+                 | RegexOptionLocaleDependent -- l
+                 | RegexOptionMultiline       -- m
+                 | RegexOptionDotall          -- s
+                 | RegexOptionUnicode         -- u
+                 | RegexOptionVerbose         -- x
     deriving (Eq, Show, Typeable, Enum)
 
-type BsonRegexOptions = BitSet BsonRegexOption
+type RegexOptions = BitSet RegexOption
 
--- | A BSON value is one of the following types of values
-data BsonValue = BsonValueDouble {-# UNPACK #-} !Double
-               | BsonValueString {-# UNPACK #-} !Text
-               | BsonValueDocument !BsonDocument
-               | BsonValueArray {-# UNPACK #-} !BsonArray
-               | BsonValueBinary !BsonBinary
-               | BsonValueObjectId {-# UNPACK #-} !BsonObjectId
-               | BsonValueBool !Bool
-               | BsonValueUtcTime {-# UNPACK #-} !UTCTime
-               | BsonValueNull
+-- | A  value is one of the following types of values
+data Value = ValueDouble {-# UNPACK #-} !Double
+           | ValueString {-# UNPACK #-} !Text
+           | ValueDocument !Document
+           | ValueArray {-# UNPACK #-} !Array
+           | ValueBinary !Binary
+           | ValueObjectId {-# UNPACK #-} !ObjectId
+           | ValueBool !Bool
+           | ValueUtcTime {-# UNPACK #-} !UTCTime
+           | ValueNull
 #if defined(__GLASGOW_HASKELL__) && (__GLASGOW_HASKELL__ >= 708)
-               | BsonValueRegex {-# UNPACK #-} !Text {-# UNPACK #-} !BsonRegexOptions
+           | ValueRegex {-# UNPACK #-} !Text {-# UNPACK #-} !RegexOptions
 #else
-               | BsonValueRegex {-# UNPACK #-} !Text !BsonRegexOptions
+           | ValueRegex {-# UNPACK #-} !Text !RegexOptions
 #endif
-               | BsonValueJavascript {-# UNPACK #-} !Text
-               | BsonValueJavascriptWithScope {-# UNPACK #-} !Text !BsonDocument
-               | BsonValueInt32 {-# UNPACK #-} !Int32
-               | BsonValueInt64 {-# UNPACK #-} !Int64
-               | BsonValueTimestamp {-# UNPACK #-} !Int64
-               | BsonValueMin
-               | BsonValueMax
+           | ValueJavascript {-# UNPACK #-} !Text
+           | ValueJavascriptWithScope {-# UNPACK #-} !Text !Document
+           | ValueInt32 {-# UNPACK #-} !Int32
+           | ValueInt64 {-# UNPACK #-} !Int64
+           | ValueTimestamp {-# UNPACK #-} !Int64
+           | ValueMin
+           | ValueMax
     deriving (Eq, Show, Typeable)
 
-type BsonLabel = Text
-type BsonDocument = HashMap BsonLabel BsonValue
-type BsonArray = Vector BsonValue
-type BsonField = (BsonLabel, BsonValue)
+type Label = Text
+type Document = HashMap Label Value
+type Array = Vector Value
+type Field = (Label, Value)
 
-data BsonObjectId = BsonObjectId
-    { bsonObjectIdTime    :: {-# UNPACK #-} !Word32
-    , bsonObjectIdMachine :: {-# UNPACK #-} !Word24
-    , bsonObjectIdPid     :: {-# UNPACK #-} !Word16
-    , bsonObjectIdInc     :: {-# UNPACK #-} !Word24
+data ObjectId = ObjectId
+    { objectIdTime    :: {-# UNPACK #-} !Word32
+    , objectIdMachine :: {-# UNPACK #-} !Word24
+    , objectIdPid     :: {-# UNPACK #-} !Word16
+    , objectIdInc     :: {-# UNPACK #-} !Word24
     } deriving (Eq, Show, Typeable)
 
-data BsonBinary = BsonBinaryGeneric     {-# UNPACK #-} !S.ByteString
-                | BsonBinaryFunction    {-# UNPACK #-} !S.ByteString
-                | BsonBinaryUuid        {-# UNPACK #-} !UUID
-                | BsonBinaryMd5         {-# UNPACK #-} !S.ByteString
-                | BsonBinaryUserDefined {-# UNPACK #-} !S.ByteString
+data Binary = BinaryGeneric     {-# UNPACK #-} !S.ByteString
+            | BinaryFunction    {-# UNPACK #-} !S.ByteString
+            | BinaryUuid        {-# UNPACK #-} !UUID
+            | BinaryMd5         {-# UNPACK #-} !S.ByteString
+            | BinaryUserDefined {-# UNPACK #-} !S.ByteString
     deriving (Eq, Show, Typeable)

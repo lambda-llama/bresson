@@ -17,14 +17,14 @@ import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Text as T
 import qualified Data.Vector as Vector
 
-import Data.Bson (BsonDocument, BsonValue(..), BsonBinary(..),
-                  BsonObjectId(..), BsonArray, BsonRegexOption(..),
-                  BsonRegexOptions)
+import Data.Bson (Document, Value(..), Binary(..),
+                  ObjectId(..), Array, RegexOption(..),
+                  RegexOptions)
 
-instance Arbitrary BsonArray where
+instance Arbitrary Array where
     arbitrary = fmap Vector.fromList arbitrary
 
-instance Arbitrary BsonDocument where
+instance Arbitrary Document where
     arbitrary = fmap HashMap.fromList arbitrary
 
 instance Arbitrary S.ByteString where
@@ -38,52 +38,52 @@ instance Arbitrary UTCTime where
         Positive a <- arbitrary
         return $ posixSecondsToUTCTime $ fromInteger a
 
-instance Arbitrary BsonValue where
+instance Arbitrary Value where
     arbitrary = oneof
-        [ BsonValueDouble <$> arbitrary
-        , BsonValueString <$> arbitrary
-        , resize 5 $ BsonValueDocument <$> arbitrary
-        , resize 5 $ BsonValueArray <$> arbitrary
-        , BsonValueBinary <$> arbitrary
-        , BsonValueObjectId <$> arbitrary
-        , BsonValueBool <$> arbitrary
-        , BsonValueUtcTime <$> arbitrary
-        , return BsonValueNull
-        , BsonValueRegex <$> arbitrary <*> arbitrary
-        , BsonValueJavascript <$> arbitrary
-        , resize 5 $ BsonValueJavascriptWithScope <$> arbitrary <*> arbitrary
-        , BsonValueInt32 <$> arbitrary
-        , BsonValueInt64 <$> arbitrary
-        , BsonValueTimestamp <$> arbitrary
-        , return BsonValueMin
-        , return BsonValueMax
+        [ ValueDouble <$> arbitrary
+        , ValueString <$> arbitrary
+        , resize 5 $ ValueDocument <$> arbitrary
+        , resize 5 $ ValueArray <$> arbitrary
+        , ValueBinary <$> arbitrary
+        , ValueObjectId <$> arbitrary
+        , ValueBool <$> arbitrary
+        , ValueUtcTime <$> arbitrary
+        , return ValueNull
+        , ValueRegex <$> arbitrary <*> arbitrary
+        , ValueJavascript <$> arbitrary
+        , resize 5 $ ValueJavascriptWithScope <$> arbitrary <*> arbitrary
+        , ValueInt32 <$> arbitrary
+        , ValueInt64 <$> arbitrary
+        , ValueTimestamp <$> arbitrary
+        , return ValueMin
+        , return ValueMax
         ]
 
-instance Arbitrary BsonBinary where
+instance Arbitrary Binary where
     arbitrary = oneof
-        [ BsonBinaryGeneric <$> arbitrary
-        , BsonBinaryFunction <$> arbitrary
-        , BsonBinaryUuid <$> arbitrary
-        , BsonBinaryMd5 <$> arbitrary
-        , BsonBinaryUserDefined <$> arbitrary
+        [ BinaryGeneric <$> arbitrary
+        , BinaryFunction <$> arbitrary
+        , BinaryUuid <$> arbitrary
+        , BinaryMd5 <$> arbitrary
+        , BinaryUserDefined <$> arbitrary
         ]
 
-instance Arbitrary BsonObjectId where
-    arbitrary = BsonObjectId <$> arbitrary
+instance Arbitrary ObjectId where
+    arbitrary = ObjectId <$> arbitrary
                              <*> arbitrary
                              <*> arbitrary
                              <*> arbitrary
 
-instance Arbitrary BsonRegexOption where
-    arbitrary = elements [ BsonRegexOptionCaseInsensitive
-                         , BsonRegexOptionLocaleDependent
-                         , BsonRegexOptionMultiline
-                         , BsonRegexOptionDotall
-                         , BsonRegexOptionUnicode
-                         , BsonRegexOptionVerbose
+instance Arbitrary RegexOption where
+    arbitrary = elements [ RegexOptionCaseInsensitive
+                         , RegexOptionLocaleDependent
+                         , RegexOptionMultiline
+                         , RegexOptionDotall
+                         , RegexOptionUnicode
+                         , RegexOptionVerbose
                          ]
 
-instance Arbitrary BsonRegexOptions where
+instance Arbitrary RegexOptions where
     arbitrary = BitSet.fromList <$> arbitrary
 
 instance Arbitrary Word24 where

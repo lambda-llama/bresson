@@ -5,10 +5,10 @@ module Data.Bson.Class
 
 import Data.Text (Text)
 
-import Data.Bson.Types (BsonValue)
+import Data.Bson.Types (Value)
 
 class ToBson a where
-    toBson :: a -> BsonValue
+    toBson :: a -> Value
 
 class FromBson a where
-    fromBson :: BsonValue -> Either Text a
+    fromBson :: Value -> Either Text a

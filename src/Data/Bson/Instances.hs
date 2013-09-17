@@ -26,55 +26,55 @@ import qualified Data.Text.Lazy as LT
 import qualified Data.Vector as Vector
 
 import Data.Bson.Class (ToBson(..), FromBson(..))
-import Data.Bson.Types (BsonValue(..), BsonBinary(..), BsonObjectId(..),
-                        BsonDocument)
+import Data.Bson.Types (Value(..), Binary(..), ObjectId(..),
+                        Document)
 
 -------------------------------------------------------------------------------
 -- * ToBson instances
 
-instance ToBson BsonValue where
+instance ToBson Value where
     toBson = id
     {-# INLINE toBson #-}
 
-instance ToBson BsonDocument where
-    toBson = BsonValueDocument
+instance ToBson Document where
+    toBson = ValueDocument
     {-# INLINE toBson #-}
 
 instance ToBson Text where
-    toBson = BsonValueString
+    toBson = ValueString
     {-# INLINE toBson #-}
 
 instance ToBson S.ByteString where
-    toBson = BsonValueBinary . BsonBinaryGeneric
+    toBson = ValueBinary . BinaryGeneric
     {-# INLINE toBson #-}
 
 instance ToBson Bool where
-    toBson = BsonValueBool
+    toBson = ValueBool
     {-# INLINE toBson #-}
 
 instance ToBson Int8 where
-    toBson = BsonValueInt32 . fromIntegral
+    toBson = ValueInt32 . fromIntegral
     {-# INLINE toBson #-}
 
 instance ToBson Int16 where
-    toBson = BsonValueInt32 . fromIntegral
+    toBson = ValueInt32 . fromIntegral
     {-# INLINE toBson #-}
 
 instance ToBson Int32 where
-    toBson = BsonValueInt32
+    toBson = ValueInt32
     {-# INLINE toBson #-}
 
 instance ToBson Int64 where
-    toBson = BsonValueInt64
+    toBson = ValueInt64
     {-# INLINE toBson #-}
 
 instance ToBson Int where
 #if WORD_SIZE_IN_BITS == 32
-    toBson = BsonValueInt32 . fromIntegral
+    toBson = ValueInt32 . fromIntegral
 #elif WORD_SIZE_IN_BITS == 64
     toBson i
-        | i `within` int32Bounds = BsonValueInt32 $ fromIntegral i
-        | otherwise              = BsonValueInt64 $ fromIntegral i
+        | i `within` int32Bounds = ValueInt32 $ fromIntegral i
+        | otherwise              = ValueInt64 $ fromIntegral i
       where
         int32Bounds = ( fromIntegral (minBound :: Int32)
                       , fromIntegral (maxBound :: Int32)
@@ -83,168 +83,168 @@ instance ToBson Int where
     {-# INLINE toBson #-}
 
 instance ToBson Double where
-    toBson = BsonValueDouble
+    toBson = ValueDouble
     {-# INLINE toBson #-}
 
 instance ToBson UTCTime where
-    toBson = BsonValueUtcTime
+    toBson = ValueUtcTime
     {-# INLINE toBson #-}
 
 instance ToBson a => ToBson (Maybe a) where
     toBson (Just a) = toBson a
-    toBson Nothing  = BsonValueNull
+    toBson Nothing  = ValueNull
     {-# INLINE toBson #-}
 
 instance ToBson a => ToBson [a] where
-    toBson = BsonValueArray . Vector.fromList . map toBson
+    toBson = ValueArray . Vector.fromList . map toBson
     {-# INLINE toBson #-}
 
 instance ToBson a => ToBson (Vector a) where
-    toBson = BsonValueArray . Vector.map toBson
+    toBson = ValueArray . Vector.map toBson
     {-# INLINE toBson #-}
 
 -------------------------------------------------------------------------------
 -- * FromBson instances
 
-unexpectedBsonValue :: Text -> BsonValue -> Text
-unexpectedBsonValue expected v =
+unexpectedValue :: Text -> Value -> Text
+unexpectedValue expected v =
     LT.toStrict $ format "Expected {}, got {} instead" [expected, got]
   where
     got :: Text
     got = case v of
-        BsonValueDocument _d -> "Embedded document"
-        BsonValueString _s   -> "UTF-8 string"
-        BsonValueBinary _b   -> "Binary"
-        BsonValueBool _b     -> "Boolean"
-        BsonValueInt32 _i    -> "32-bit Integer"
-        BsonValueInt64 _i    -> "64-bit Integer"
-        BsonValueDouble _d   -> "Double"
-        BsonValueUtcTime _t  -> "UTC datetime"
-        BsonValueArray _a    -> "Array"
-        BsonValueObjectId {} -> "ObjectId"
-        BsonValueNull        -> "NULL"
-        BsonValueRegex _p _o -> "Regular expression"
-        BsonValueJavascript _c -> "JavaScript code"
-        BsonValueJavascriptWithScope _c _s -> "JavaScript code with scope"
-        BsonValueTimestamp _i  -> "Timestamp"
-        BsonValueMin         -> "Min key"
-        BsonValueMax         -> "Max key"
-{-# INLINE unexpectedBsonValue #-}
+        ValueDocument _d -> "Embedded document"
+        ValueString _s   -> "UTF-8 string"
+        ValueBinary _b   -> "Binary"
+        ValueBool _b     -> "Boolean"
+        ValueInt32 _i    -> "32-bit Integer"
+        ValueInt64 _i    -> "64-bit Integer"
+        ValueDouble _d   -> "Double"
+        ValueUtcTime _t  -> "UTC datetime"
+        ValueArray _a    -> "Array"
+        ValueObjectId {} -> "ObjectId"
+        ValueNull        -> "NULL"
+        ValueRegex _p _o -> "Regular expression"
+        ValueJavascript _c -> "JavaScript code"
+        ValueJavascriptWithScope _c _s -> "JavaScript code with scope"
+        ValueTimestamp _i  -> "Timestamp"
+        ValueMin         -> "Min key"
+        ValueMax         -> "Max key"
+{-# INLINE unexpectedValue #-}
 
-instance FromBson BsonValue where
+instance FromBson Value where
     fromBson = Right . id
     {-# INLINE fromBson #-}
 
-instance FromBson BsonDocument where
-    fromBson (BsonValueDocument d) = Right d
-    fromBson v = Left $ unexpectedBsonValue "Embedded document" v
+instance FromBson Document where
+    fromBson (ValueDocument d) = Right d
+    fromBson v = Left $ unexpectedValue "Embedded document" v
     {-# INLINE fromBson #-}
 
 instance FromBson Text where
-    fromBson (BsonValueString t) = Right t
-    fromBson v = Left $ unexpectedBsonValue "UTF-8 string" v
+    fromBson (ValueString t) = Right t
+    fromBson v = Left $ unexpectedValue "UTF-8 string" v
     {-# INLINE fromBson #-}
 
 instance FromBson S.ByteString where
-    fromBson (BsonValueBinary (BsonBinaryGeneric b)) = Right b
-    fromBson v = Left $ unexpectedBsonValue "Binary" v
+    fromBson (ValueBinary (BinaryGeneric b)) = Right b
+    fromBson v = Left $ unexpectedValue "Binary" v
     {-# INLINE fromBson #-}
 
 instance FromBson Bool where
-    fromBson (BsonValueBool b) = Right b
-    fromBson v                 = Left $ unexpectedBsonValue "Boolean" v
+    fromBson (ValueBool b) = Right b
+    fromBson v                 = Left $ unexpectedValue "Boolean" v
     {-# INLINE fromBson #-}
 
 instance FromBson Int8 where
-    fromBson (BsonValueInt32 i) = bsonFromIntegral i
-    fromBson (BsonValueInt64 i) = bsonFromIntegral i
-    fromBson v = Left $ unexpectedBsonValue "32-bit or 64-bit Integer" v
+    fromBson (ValueInt32 i) = bsonFromIntegral i
+    fromBson (ValueInt64 i) = bsonFromIntegral i
+    fromBson v = Left $ unexpectedValue "32-bit or 64-bit Integer" v
     {-# INLINE fromBson #-}
 
 instance FromBson Int16 where
-    fromBson (BsonValueInt32 i) = bsonFromIntegral i
-    fromBson (BsonValueInt64 i) = bsonFromIntegral i
-    fromBson v = Left $ unexpectedBsonValue "32-bit or 64-bit Integer" v
+    fromBson (ValueInt32 i) = bsonFromIntegral i
+    fromBson (ValueInt64 i) = bsonFromIntegral i
+    fromBson v = Left $ unexpectedValue "32-bit or 64-bit Integer" v
     {-# INLINE fromBson #-}
 
 instance FromBson Int32 where
-    fromBson (BsonValueInt32 i) = Right i
-    fromBson (BsonValueInt64 i) = bsonFromIntegral i
-    fromBson v = Left $ unexpectedBsonValue "32-bit or 64-bit Integer" v
+    fromBson (ValueInt32 i) = Right i
+    fromBson (ValueInt64 i) = bsonFromIntegral i
+    fromBson v = Left $ unexpectedValue "32-bit or 64-bit Integer" v
     {-# INLINE fromBson #-}
 
 instance FromBson Int64 where
-    fromBson (BsonValueInt32 i) = Right $ fromIntegral i
-    fromBson (BsonValueInt64 i) = Right i
-    fromBson v = Left $ unexpectedBsonValue "32-bit or 64-bit Integer" v
+    fromBson (ValueInt32 i) = Right $ fromIntegral i
+    fromBson (ValueInt64 i) = Right i
+    fromBson v = Left $ unexpectedValue "32-bit or 64-bit Integer" v
     {-# INLINE fromBson #-}
 
 instance FromBson Int where
-    fromBson (BsonValueInt32 i) = Right $ fromIntegral i
+    fromBson (ValueInt32 i) = Right $ fromIntegral i
 #if WORD_SIZE_IN_BITS == 32
-    fromBson (BsonValueInt64 i) = bsonFromIntegral i
+    fromBson (ValueInt64 i) = bsonFromIntegral i
 #elif WORD_SIZE_IN_BITS == 64
-    fromBson (BsonValueInt64 i) = Right $ fromIntegral i
+    fromBson (ValueInt64 i) = Right $ fromIntegral i
 #endif
-    fromBson v = Left $ unexpectedBsonValue "32-bit or 64-bit Integer" v
+    fromBson v = Left $ unexpectedValue "32-bit or 64-bit Integer" v
     {-# INLINE fromBson #-}
 
 instance FromBson Double where
-    fromBson (BsonValueDouble d) = Right d
-    fromBson v = Left $ unexpectedBsonValue "Double" v
+    fromBson (ValueDouble d) = Right d
+    fromBson v = Left $ unexpectedValue "Double" v
     {-# INLINE fromBson #-}
 
 instance FromBson UTCTime where
-    fromBson (BsonValueUtcTime t) = Right t
-    fromBson v = Left $ unexpectedBsonValue "UTC datetime" v
+    fromBson (ValueUtcTime t) = Right t
+    fromBson v = Left $ unexpectedValue "UTC datetime" v
     {-# INLINE fromBson #-}
 
 instance FromBson a => FromBson (Maybe a) where
-    fromBson BsonValueNull = Right Nothing
+    fromBson ValueNull = Right Nothing
     fromBson v = Just <$> fromBson v
     {-# INLINE fromBson #-}
 
 instance FromBson a => FromBson [a] where
-    fromBson (BsonValueArray a) = Vector.toList <$> Vector.mapM fromBson a
-    fromBson v = Left $ unexpectedBsonValue "Array" v
+    fromBson (ValueArray a) = Vector.toList <$> Vector.mapM fromBson a
+    fromBson v = Left $ unexpectedValue "Array" v
     {-# INLINE fromBson #-}
 
 instance FromBson a => FromBson (Vector a) where
-    fromBson (BsonValueArray a) = Vector.mapM fromBson a
-    fromBson v = Left $ unexpectedBsonValue "Array" v
+    fromBson (ValueArray a) = Vector.mapM fromBson a
+    fromBson v = Left $ unexpectedValue "Array" v
     {-# INLINE fromBson #-}
 
 -------------------------------------------------------------------------------
 -- * NFData instances for internal types
 
-instance NFData BsonValue where
-    rnf (BsonValueDouble _) = ()
-    rnf (BsonValueString a) = rnf a `seq` ()
-    rnf (BsonValueDocument a) = rnf a `seq` ()
-    rnf (BsonValueArray a) = rnf a `seq` ()
-    rnf (BsonValueBinary a) = rnf a `seq` ()
-    rnf (BsonValueObjectId a) = rnf a `seq` ()
-    rnf (BsonValueBool _) = ()
-    rnf (BsonValueUtcTime a) = rnf a `seq` ()
-    rnf BsonValueNull = ()
-    rnf (BsonValueRegex a b) = rnf a `seq` rnf b `seq` ()
-    rnf (BsonValueJavascript a) = rnf a `seq` ()
-    rnf (BsonValueJavascriptWithScope a b) = rnf a `seq` rnf b `seq` ()
-    rnf (BsonValueInt32 _) = ()
-    rnf (BsonValueInt64 _) = ()
-    rnf (BsonValueTimestamp _) = ()
-    rnf BsonValueMin = ()
-    rnf BsonValueMax = ()
+instance NFData Value where
+    rnf (ValueDouble _) = ()
+    rnf (ValueString a) = rnf a `seq` ()
+    rnf (ValueDocument a) = rnf a `seq` ()
+    rnf (ValueArray a) = rnf a `seq` ()
+    rnf (ValueBinary a) = rnf a `seq` ()
+    rnf (ValueObjectId a) = rnf a `seq` ()
+    rnf (ValueBool _) = ()
+    rnf (ValueUtcTime a) = rnf a `seq` ()
+    rnf ValueNull = ()
+    rnf (ValueRegex a b) = rnf a `seq` rnf b `seq` ()
+    rnf (ValueJavascript a) = rnf a `seq` ()
+    rnf (ValueJavascriptWithScope a b) = rnf a `seq` rnf b `seq` ()
+    rnf (ValueInt32 _) = ()
+    rnf (ValueInt64 _) = ()
+    rnf (ValueTimestamp _) = ()
+    rnf ValueMin = ()
+    rnf ValueMax = ()
 
-instance NFData BsonObjectId where
-    rnf (BsonObjectId {}) = ()
+instance NFData ObjectId where
+    rnf (ObjectId {}) = ()
 
-instance NFData BsonBinary where
-    rnf (BsonBinaryGeneric a) = rnf a `seq` ()
-    rnf (BsonBinaryFunction a) = rnf a `seq` ()
-    rnf (BsonBinaryUuid a) = rnf a `seq` ()
-    rnf (BsonBinaryMd5 a) = rnf a `seq` ()
-    rnf (BsonBinaryUserDefined a) = rnf a `seq` ()
+instance NFData Binary where
+    rnf (BinaryGeneric a) = rnf a `seq` ()
+    rnf (BinaryFunction a) = rnf a `seq` ()
+    rnf (BinaryUuid a) = rnf a `seq` ()
+    rnf (BinaryMd5 a) = rnf a `seq` ()
+    rnf (BinaryUserDefined a) = rnf a `seq` ()
 
 #if !MIN_VERSION_bytestring(0,10,0)
 instance NFData ByteString where
