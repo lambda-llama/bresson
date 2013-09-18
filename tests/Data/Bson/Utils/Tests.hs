@@ -5,20 +5,23 @@ module Data.Bson.Utils.Tests
     ) where
 
 import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.QuickCheck (testProperty)
-import Test.QuickCheck (Property, (==>))
+import Test.Tasty.QuickCheck (Arbitrary(..), NonEmptyList(..), suchThat, testProperty)
 import qualified Data.Text as ST
 
 import Data.Bson (Document, Label, Value(ValueDocument),
                   (=:), (!?), document)
 import Data.Bson.Tests.Instances ()
 
-testRecursiveLookup :: [Label] -> Value -> Property
-testRecursiveLookup labels v =
-    (length labels > 0 && all isProperLabel labels) ==>
-    doc !? (ST.intercalate "." labels) == Just v
+newtype ProperLabel = ProperLabel { unProperLabel :: Label }
+    deriving (Show)
+
+instance Arbitrary ProperLabel where
+    arbitrary = fmap ProperLabel $ arbitrary `suchThat` (not . ST.any (== '.'))
+
+testRecursiveLookup :: NonEmptyList ProperLabel -> Value -> Bool
+testRecursiveLookup properLabels v = doc !? (ST.intercalate "." labels) == Just v
   where
-    isProperLabel = not . ST.any (== '.')
+    labels = map unProperLabel $ getNonEmpty properLabels
 
     doc :: Document
     ValueDocument doc =
