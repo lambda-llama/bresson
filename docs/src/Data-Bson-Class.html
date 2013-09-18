@@ -14,12 +14,12 @@
 <a name="line-5"></a>
 <a name="line-6"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>Data</span><span class='hs-varop'>.</span><span class='hs-conid'>Text</span> <span class='hs-layout'>(</span><span class='hs-conid'>Text</span><span class='hs-layout'>)</span>
 <a name="line-7"></a>
-<a name="line-8"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>Data</span><span class='hs-varop'>.</span><span class='hs-conid'>Bson</span><span class='hs-varop'>.</span><span class='hs-conid'>Types</span> <span class='hs-layout'>(</span><span class='hs-conid'>BsonValue</span><span class='hs-layout'>)</span>
+<a name="line-8"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>Data</span><span class='hs-varop'>.</span><span class='hs-conid'>Bson</span><span class='hs-varop'>.</span><span class='hs-conid'>Types</span> <span class='hs-layout'>(</span><span class='hs-conid'>Value</span><span class='hs-layout'>)</span>
 <a name="line-9"></a>
 <a name="line-10"></a><span class='hs-keyword'>class</span> <span class='hs-conid'>ToBson</span> <span class='hs-varid'>a</span> <span class='hs-keyword'>where</span>
-<a name="line-11"></a>    <span class='hs-varid'>toBson</span> <span class='hs-keyglyph'>::</span> <span class='hs-varid'>a</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>BsonValue</span>
+<a name="line-11"></a>    <span class='hs-varid'>toBson</span> <span class='hs-keyglyph'>::</span> <span class='hs-varid'>a</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Value</span>
 <a name="line-12"></a>
 <a name="line-13"></a><span class='hs-keyword'>class</span> <span class='hs-conid'>FromBson</span> <span class='hs-varid'>a</span> <span class='hs-keyword'>where</span>
-<a name="line-14"></a>    <span class='hs-varid'>fromBson</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>BsonValue</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Either</span> <span class='hs-conid'>Text</span> <span class='hs-varid'>a</span>
+<a name="line-14"></a>    <span class='hs-varid'>fromBson</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Value</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Either</span> <span class='hs-conid'>Text</span> <span class='hs-varid'>a</span>
 </pre></body>
 </html>
