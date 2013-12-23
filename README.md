@@ -44,7 +44,7 @@ labels:
 {-# LANGUAGE OverloadedStrings #-}
 
 import Data.Binary (encode, decode)
-import Data.Bson (BsonDocument, document, (=:), (!?))
+import Data.Bson (Document, document, (=:), (!?))
 import qualified Data.ByteString.Lazy as L
 
 buffer :: L.ByteString
@@ -52,7 +52,7 @@ buffer = encode $ document [ "foo" =: "bar"
                            , "bar" =: document [ "boo" =: 42 ]
                            ]
 
-doc :: BsonDocument
+doc :: Document
 doc = decode buffer
 
 value :: Int
