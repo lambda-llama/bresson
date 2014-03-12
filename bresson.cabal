@@ -154,7 +154,7 @@ Benchmark bresson-benchmark-against-bson
       , bresson
 
       , criterion                  == 0.8.*
-      , bson                       == 0.2.3
+      , bson                       == 0.2.4
       , deepseq-generics           == 0.1.*
 
 Source-repository head
