@@ -49,11 +49,7 @@ data Value = ValueDouble {-# UNPACK #-} !Double
            | ValueBool !Bool
            | ValueUtcTime {-# UNPACK #-} !UTCTime
            | ValueNull
-#if defined(__GLASGOW_HASKELL__) && (__GLASGOW_HASKELL__ >= 708)
-           | ValueRegex {-# UNPACK #-} !Text {-# UNPACK #-} !RegexOptions
-#else
            | ValueRegex {-# UNPACK #-} !Text !RegexOptions
-#endif
            | ValueJavascript {-# UNPACK #-} !Text
            | ValueJavascriptWithScope {-# UNPACK #-} !Text !Document
            | ValueInt32 {-# UNPACK #-} !Int32
