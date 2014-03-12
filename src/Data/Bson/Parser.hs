@@ -132,3 +132,4 @@ parseMaybe m v = runParser (m v) (const Nothing) Just
 -- | Run a 'Parser' with an 'Either' result type.
 parseEither :: (a -> Parser b) -> a -> Either String b
 parseEither m v = runParser (m v) Left Right
+{-# INLINE parseEither #-}
