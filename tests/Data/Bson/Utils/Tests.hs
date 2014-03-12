@@ -9,7 +9,7 @@ import Test.Tasty.QuickCheck (Arbitrary(..), NonEmptyList(..), suchThat, testPro
 import qualified Data.Text as ST
 
 import Data.Bson (Document, Label, Value(ValueDocument),
-                  (=:), (!?), document)
+                  (=:), (!?), document, parseMaybe)
 import Data.Bson.Tests.Instances ()
 
 newtype ProperLabel = ProperLabel { unProperLabel :: Label }
@@ -19,10 +19,10 @@ instance Arbitrary ProperLabel where
     arbitrary = fmap ProperLabel $ arbitrary `suchThat` (not . ST.any (== '.'))
 
 testRecursiveLookup :: NonEmptyList ProperLabel -> Value -> Bool
-testRecursiveLookup properLabels v = doc !? (ST.intercalate "." labels) == Just v
+testRecursiveLookup properLabels v = parseMaybe parser doc == Just v
   where
     labels = map unProperLabel $ getNonEmpty properLabels
-
+    parser d = d !? (ST.intercalate "." labels)
     doc :: Document
     ValueDocument doc =
         foldr (\l acc -> ValueDocument $ document [l =: acc]) v labels
