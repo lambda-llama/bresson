@@ -10,13 +10,13 @@ import Data.Text (Text)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
 
-import Data.Bson (Value, ToBson(..), FromBson(..))
+import Data.Bson (Value, ToBson(..), FromBson(..), parseMaybe)
 import Data.Bson.Tests.Instances ()
 
 testToFromBson :: (ToBson a, FromBson a, Eq a) => a -> Bool
-testToFromBson a = case fromBson . toBson $ a of
-    Left _ -> False
-    Right a' -> a == a'
+testToFromBson a = case parseMaybe fromBson . toBson $ a of
+    Nothing -> False
+    Just a' -> a == a'
 
 tests :: TestTree
 tests = testGroup "Data.Bson.Instances.Tests"

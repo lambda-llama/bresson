@@ -14,6 +14,7 @@ import qualified Data.HashMap.Strict as HashMap
 
 import Data.Bson.Class (FromBson(..), ToBson(..))
 import Data.Bson.Instances ()
+import Data.Bson.Parser (parseMaybe)
 import Data.Bson.Types (Label, Document, Field)
 
 document :: [Field] -> Document
@@ -23,7 +24,7 @@ document = HashMap.fromList
 lookup :: FromBson a => Label -> Document -> Maybe a
 lookup label doc = do
     v <- HashMap.lookup label doc
-    either (const Nothing) Just $! fromBson v
+    parseMaybe fromBson v
 
 -- | Recursively lookup a nested field in a Document.
 (!?) :: FromBson a => Document -> Label -> Maybe a

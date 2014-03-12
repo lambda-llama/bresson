@@ -3,12 +3,11 @@ module Data.Bson.Class
     , FromBson(..)
     ) where
 
-import Data.Text (Text)
-
 import Data.Bson.Types (Value)
+import Data.Bson.Parser (Parser)
 
 class ToBson a where
     toBson :: a -> Value
 
 class FromBson a where
-    fromBson :: Value -> Either Text a
+    fromBson :: Value -> Parser a

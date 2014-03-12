@@ -18,13 +18,11 @@ import Data.Time.Clock (UTCTime)
 import qualified Data.ByteString as S
 
 import Data.Text (Text)
-import Data.Text.Buildable (Buildable)
-import Data.Text.Format (format)
 import Data.Vector (Vector)
-import qualified Data.Text.Lazy as LT
 import qualified Data.Vector as Vector
 
 import Data.Bson.Class (ToBson(..), FromBson(..))
+import Data.Bson.Parser (Parser)
 import Data.Bson.Types (Value(..), Binary(..), ObjectId(..),
                         Document)
 
@@ -105,11 +103,11 @@ instance ToBson a => ToBson (Vector a) where
 -------------------------------------------------------------------------------
 -- * FromBson instances
 
-unexpectedValue :: Text -> Value -> Text
+unexpectedValue :: String -> Value -> String
 unexpectedValue expected v =
-    LT.toStrict $ format "Expected {}, got {} instead" [expected, got]
+    "Expected " ++ show expected ++ " got " ++ show got ++ " instead"
   where
-    got :: Text
+    got :: String
     got = case v of
         ValueDocument _d -> "Embedded document"
         ValueString _s   -> "UTF-8 string"
@@ -131,86 +129,86 @@ unexpectedValue expected v =
 {-# INLINE unexpectedValue #-}
 
 instance FromBson Value where
-    fromBson = Right . id
+    fromBson = return . id
     {-# INLINE fromBson #-}
 
 instance FromBson Document where
-    fromBson (ValueDocument d) = Right d
-    fromBson v = Left $ unexpectedValue "Embedded document" v
+    fromBson (ValueDocument d) = return d
+    fromBson v = fail $ unexpectedValue "Embedded document" v
     {-# INLINE fromBson #-}
 
 instance FromBson Text where
-    fromBson (ValueString t) = Right t
-    fromBson v = Left $ unexpectedValue "UTF-8 string" v
+    fromBson (ValueString t) = return t
+    fromBson v = fail $ unexpectedValue "UTF-8 string" v
     {-# INLINE fromBson #-}
 
 instance FromBson S.ByteString where
-    fromBson (ValueBinary (BinaryGeneric b)) = Right b
-    fromBson v = Left $ unexpectedValue "Binary" v
+    fromBson (ValueBinary (BinaryGeneric b)) = return b
+    fromBson v = fail $ unexpectedValue "Binary" v
     {-# INLINE fromBson #-}
 
 instance FromBson Bool where
-    fromBson (ValueBool b) = Right b
-    fromBson v                 = Left $ unexpectedValue "Boolean" v
+    fromBson (ValueBool b) = return b
+    fromBson v                 = fail $ unexpectedValue "Boolean" v
     {-# INLINE fromBson #-}
 
 instance FromBson Int8 where
     fromBson (ValueInt32 i) = bsonFromIntegral i
     fromBson (ValueInt64 i) = bsonFromIntegral i
-    fromBson v = Left $ unexpectedValue "32-bit or 64-bit Integer" v
+    fromBson v = fail $ unexpectedValue "32-bit or 64-bit Integer" v
     {-# INLINE fromBson #-}
 
 instance FromBson Int16 where
     fromBson (ValueInt32 i) = bsonFromIntegral i
     fromBson (ValueInt64 i) = bsonFromIntegral i
-    fromBson v = Left $ unexpectedValue "32-bit or 64-bit Integer" v
+    fromBson v = fail $ unexpectedValue "32-bit or 64-bit Integer" v
     {-# INLINE fromBson #-}
 
 instance FromBson Int32 where
-    fromBson (ValueInt32 i) = Right i
+    fromBson (ValueInt32 i) = return i
     fromBson (ValueInt64 i) = bsonFromIntegral i
-    fromBson v = Left $ unexpectedValue "32-bit or 64-bit Integer" v
+    fromBson v = fail $ unexpectedValue "32-bit or 64-bit Integer" v
     {-# INLINE fromBson #-}
 
 instance FromBson Int64 where
-    fromBson (ValueInt32 i) = Right $ fromIntegral i
-    fromBson (ValueInt64 i) = Right i
-    fromBson v = Left $ unexpectedValue "32-bit or 64-bit Integer" v
+    fromBson (ValueInt32 i) = return $ fromIntegral i
+    fromBson (ValueInt64 i) = return i
+    fromBson v = fail $ unexpectedValue "32-bit or 64-bit Integer" v
     {-# INLINE fromBson #-}
 
 instance FromBson Int where
-    fromBson (ValueInt32 i) = Right $ fromIntegral i
+    fromBson (ValueInt32 i) = return $ fromIntegral i
 #if WORD_SIZE_IN_BITS == 32
     fromBson (ValueInt64 i) = bsonFromIntegral i
 #elif WORD_SIZE_IN_BITS == 64
-    fromBson (ValueInt64 i) = Right $ fromIntegral i
+    fromBson (ValueInt64 i) = return $ fromIntegral i
 #endif
-    fromBson v = Left $ unexpectedValue "32-bit or 64-bit Integer" v
+    fromBson v = fail $ unexpectedValue "32-bit or 64-bit Integer" v
     {-# INLINE fromBson #-}
 
 instance FromBson Double where
-    fromBson (ValueDouble d) = Right d
-    fromBson v = Left $ unexpectedValue "Double" v
+    fromBson (ValueDouble d) = return d
+    fromBson v = fail $ unexpectedValue "Double" v
     {-# INLINE fromBson #-}
 
 instance FromBson UTCTime where
-    fromBson (ValueUtcTime t) = Right t
-    fromBson v = Left $ unexpectedValue "UTC datetime" v
+    fromBson (ValueUtcTime t) = return t
+    fromBson v = fail $ unexpectedValue "UTC datetime" v
     {-# INLINE fromBson #-}
 
 instance FromBson a => FromBson (Maybe a) where
-    fromBson ValueNull = Right Nothing
+    fromBson ValueNull = return Nothing
     fromBson v = Just <$> fromBson v
     {-# INLINE fromBson #-}
 
 instance FromBson a => FromBson [a] where
     fromBson (ValueArray a) = Vector.toList <$> Vector.mapM fromBson a
-    fromBson v = Left $ unexpectedValue "Array" v
+    fromBson v = fail $ unexpectedValue "Array" v
     {-# INLINE fromBson #-}
 
 instance FromBson a => FromBson (Vector a) where
     fromBson (ValueArray a) = Vector.mapM fromBson a
-    fromBson v = Left $ unexpectedValue "Array" v
+    fromBson v = fail $ unexpectedValue "Array" v
     {-# INLINE fromBson #-}
 
 -------------------------------------------------------------------------------
@@ -253,14 +251,14 @@ instance NFData ByteString where
 -------------------------------------------------------------------------------
 -- * Helpers
 
-bsonFromIntegral :: forall a b. (Integral a, Integral b, Bounded b, Buildable a)
+bsonFromIntegral :: forall a b. (Show a, Integral a, Integral b, Bounded b)
                  => a
-                 -> Either Text b
+                 -> Parser b
 bsonFromIntegral i
-    | i `within` targetBounds = Right $ fromIntegral i
+    | i `within` targetBounds = return $ fromIntegral i
     | otherwise =
-        Left . LT.toStrict $
-        format "Integral {} out of bounds [{}, {}]" [i, targetMin, targetMax]
+        fail $
+        "Integral " ++ show i ++ " out of bounds [" ++ show targetMin ++ ", " ++ show targetMax ++ "]"
   where
     targetBounds = ( fromIntegral (minBound :: b)
                    , fromIntegral (maxBound :: b)

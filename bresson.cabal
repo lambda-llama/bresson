@@ -35,7 +35,6 @@ Library
       , data-binary-ieee754        == 0.4.*
       , word24                     == 1.0.*
       , text                       == 1.1.*
-      , text-format                == 0.3.*
       , vector                     == 0.10.*
       , unordered-containers       == 0.2.*
       , bitset                     == 1.4.*
