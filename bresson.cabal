@@ -51,6 +51,7 @@ Library
     Other-modules:
         Data.Bson.Class
         Data.Bson.Instances
+        Data.Bson.Parser
         Data.Bson.Types
         Data.Bson.Utils
 
