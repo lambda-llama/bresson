@@ -2,9 +2,12 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE CPP #-}
 
 module Main where
+
+import GHC.Generics
 
 import Control.DeepSeq (NFData(..), force)
 import Data.ByteString.Lazy (ByteString)
@@ -14,7 +17,7 @@ import Data.Binary.Put (runPut)
 import qualified Data.ByteString.Lazy as L
 
 import Criterion.Main (defaultMain, bgroup, bench, nf)
-import Control.DeepSeq.TH (deriveNFDatas)
+import Control.DeepSeq.Generics (genericRnf)
 import "bresson" Data.Bson.Tests.Instances ()
 import qualified "bresson" Data.Bson as Bresson
 import qualified "bson" Data.Bson as Bson
@@ -33,8 +36,30 @@ deriving instance NFData Bson.UserDefined
 deriving instance NFData Bson.Symbol
 deriving instance NFData Bson.MongoStamp
 
-$(deriveNFDatas [''Bson.Value, ''Bson.MinMaxKey, ''Bson.Regex,
-                 ''Bson.Javascript, ''Bson.ObjectId, ''Bson.Field])
+deriving instance Generic Bson.Value
+deriving instance Generic Bson.MinMaxKey
+deriving instance Generic Bson.Regex
+deriving instance Generic Bson.Javascript
+deriving instance Generic Bson.ObjectId
+deriving instance Generic Bson.Field
+
+instance NFData Bson.Value where
+    rnf = genericRnf
+
+instance NFData Bson.MinMaxKey where
+    rnf = genericRnf
+
+instance NFData Bson.Regex where
+    rnf = genericRnf
+
+instance NFData Bson.Javascript where
+    rnf = genericRnf
+
+instance NFData Bson.ObjectId where
+    rnf = genericRnf
+
+instance NFData Bson.Field where
+    rnf = genericRnf
 
 encodeBresson :: Bresson.Document -> ByteString
 encodeBresson = encode

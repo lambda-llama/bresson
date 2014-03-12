@@ -9,7 +9,7 @@ import Data.Text (Text)
 import Test.QuickCheck (Arbitrary, arbitrary, resize)
 import Test.QuickCheck.Gen (unGen)
 
-import Data.Bson (FromBson(..), ToBson(..), Document)
+import Data.Bson (FromBson(..), ToBson(..), Document, parseMaybe)
 import Data.Bson.Tests.Instances ()
 
 main :: IO ()
@@ -34,9 +34,9 @@ main = do
     seed = 42
 
     f :: (FromBson a, ToBson a) => a -> a
-    f x = case fromBson $ toBson x of
-        Left _  -> error "fromBson"
-        Right a -> a
+    f x = case parseMaybe fromBson $ toBson x of
+        Nothing  -> error "fromBson"
+        Just a -> a
 
     generate  :: (FromBson a, ToBson a, Arbitrary a) => StdGen -> a
     generate stdGen = unGen (resize n arbitrary) stdGen seed
