@@ -21,7 +21,6 @@ import Data.Text (Text)
 import Data.Text.Buildable (Buildable)
 import Data.Text.Format (format)
 import Data.Vector (Vector)
-import Data.UUID (UUID)
 import qualified Data.Text.Lazy as LT
 import qualified Data.Vector as Vector
 
@@ -250,9 +249,6 @@ instance NFData Binary where
 instance NFData ByteString where
     rnf x = S.length x `seq` ()
 #endif
-
-instance NFData UUID where
-    rnf x = x `seq` ()
 
 -------------------------------------------------------------------------------
 -- * Helpers
