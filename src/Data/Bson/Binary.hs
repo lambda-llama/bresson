@@ -65,7 +65,9 @@ import Data.Bson.Types (Document, Array, Label, Value(..),
 
 instance Binary.Binary Document where
     put = putDocument
+    {-# INLINE put #-}
     get = getDocument
+    {-# INLINE get #-}
 
 putField :: Label -> Value -> Put
 putField key value = do
@@ -158,11 +160,11 @@ putArray array = putAsDocument $ Vector.zipWithM_ putField inf array
 
 getArray :: Get Array
 getArray = getDocument >>= \doc ->
-    return $ Vector.unfoldr (f doc (HashMap.size doc)) 0
+    return $ Vector.generate (HashMap.size doc) (f doc)
   where
-    f doc s c | c >= s    = Nothing
-              | otherwise = HashMap.lookup (intToText c) doc >>=
-                     Just . (, c + 1)
+    -- TODO(superbobry): actually, we can switch to
+    -- 'fromJust . lookup' and completely ignore invalid BSON.
+    f doc i = HashMap.lookupDefault ValueNull (intToText i) doc
 {-# INLINE getArray #-}
 
 putBinary :: Binary -> Put
