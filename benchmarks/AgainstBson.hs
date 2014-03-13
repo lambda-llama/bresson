@@ -1,9 +1,10 @@
-{-# LANGUAGE PackageImports #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE StandaloneDeriving #-}
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE CPP #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE PackageImports #-}
+{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Main where
 
@@ -14,6 +15,7 @@ import Data.ByteString.Lazy (ByteString)
 import Data.Binary (decode, encode)
 import Data.Binary.Get (runGet)
 import Data.Binary.Put (runPut)
+import System.FilePath.Posix ((</>))
 import qualified Data.ByteString.Lazy as L
 
 import Criterion.Main (defaultMain, bgroup, bench, nf)
@@ -79,19 +81,32 @@ decodeBson = runGet Bson.getDocument
 
 main :: IO ()
 main = do
-    testData <- L.readFile "benchmarks/bson-data/twitter100.bson"
-    let bson = force $ decodeBson testData
-    let bresson = force $ decodeBresson testData
+    !(twitterBytes, twitterBson, twitterBresson) <- go "twitter100.bson"
+    !(auctionBytes, auctionBson, auctionBresson) <- go "auctions.bson"
     defaultMain [ bgroup "bson"
                   [ bgroup "twitter-100"
-                    [ bench "encode" $ nf encodeBson bson
-                    , bench "decode" $ nf decodeBson testData
+                    [ bench "encode" $ nf encodeBson twitterBson
+                    , bench "decode" $ nf decodeBson twitterBytes
+                    ]
+                  , bgroup "auction"
+                    [ bench "encode" $ nf encodeBson auctionBson
+                    , bench "decode" $ nf decodeBson auctionBytes
                     ]
                   ]
                 , bgroup "bresson"
                   [ bgroup "twitter-100"
-                    [ bench "encode" $ nf encodeBresson bresson
-                    , bench "decode" $ nf decodeBresson testData
+                    [ bench "encode" $ nf encodeBresson twitterBresson
+                    , bench "decode" $ nf decodeBresson twitterBytes
+                    ]
+                  , bgroup "auction"
+                    [ bench "encode" $ nf encodeBresson auctionBresson
+                    , bench "decode" $ nf decodeBresson auctionBytes
                     ]
                   ]
                 ]
+  where
+    go fileName = do
+        bytes <- L.readFile $ "benchmarks" </> "bson-data" </> fileName
+        return (force bytes,
+                force $ decodeBson bytes,
+                force $ decodeBresson bytes)
