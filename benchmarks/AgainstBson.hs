@@ -82,16 +82,16 @@ main = do
     testData <- L.readFile "benchmarks/bson-data/twitter100.bson"
     let bson = force $ decodeBson testData
     let bresson = force $ decodeBresson testData
-    defaultMain [ bgroup "encode"
+    defaultMain [ bgroup "bson"
                   [ bgroup "twitter-100"
-                    [ bench "bson" $ nf encodeBson bson
-                    , bench "bresson" $ nf encodeBresson bresson
+                    [ bench "encode" $ nf encodeBson bson
+                    , bench "decode" $ nf decodeBson testData
                     ]
                   ]
-                , bgroup "decode"
+                , bgroup "bresson"
                   [ bgroup "twitter-100"
-                    [ bench "bson" $ nf decodeBson testData
-                    , bench "bresson" $ nf decodeBresson testData
+                    [ bench "encode" $ nf encodeBresson bresson
+                    , bench "decode" $ nf decodeBresson testData
                     ]
                   ]
                 ]
