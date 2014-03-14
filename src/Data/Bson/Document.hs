@@ -14,7 +14,7 @@ import {-# SOURCE #-} Data.Bson.Types (Label, Value)
 import Data.Bson.Instances ()
 import qualified Data.Bson.HashDocument as DocImpl
 
-newtype Document = Document (DocImpl.Document Label Value)
+newtype Document = Document DocImpl.Document
                      deriving (Show, Eq)
 
 foldlWithKey' ::  (a -> Label -> Value -> a) -> a -> Document -> a

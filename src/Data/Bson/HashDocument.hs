@@ -12,19 +12,21 @@ import Prelude hiding (lookup)
 import Data.Hashable(Hashable)
 import qualified Data.HashMap.Strict as HashMap
 
-type Document k v = HashMap.HashMap k v
+import {-# SOURCE #-} Data.Bson.Types (Label, Value)
 
-foldlWithKey' ::  (a -> k -> v -> a) -> a -> Document k v -> a
+type Document = HashMap.HashMap Label Value
+
+foldlWithKey' ::  (a -> Label -> Value -> a) -> a -> Document -> a
 foldlWithKey' = HashMap.foldlWithKey'
 
-fromList :: (Hashable k, Ord k) => [(k, a)] -> Document k a
+fromList :: [(Label, Value)] -> Document 
 fromList = HashMap.fromList
 
-size :: Document k v -> Int
+size :: Document -> Int
 size = HashMap.size
 
-lookup :: (Eq k, Hashable k) => k -> Document k v -> Maybe v
+lookup :: Label -> Document -> Maybe Value
 lookup = HashMap.lookup
 
-lookupDefault :: (Eq k, Hashable k) => v -> k -> Document k v -> v
+lookupDefault :: Value -> Label -> Document -> Value
 lookupDefault = HashMap.lookupDefault
