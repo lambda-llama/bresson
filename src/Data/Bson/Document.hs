@@ -10,26 +10,27 @@ import Prelude hiding (lookup)
 import Data.Hashable(Hashable)
 import Control.DeepSeq (NFData(..))
 
+import {-# SOURCE #-} Data.Bson.Types (Label, Value)
+import Data.Bson.Instances ()
 import qualified Data.Bson.HashDocument as DocImpl
 
-
-newtype Document k v = Document (DocImpl.Document k v)
+newtype Document = Document (DocImpl.Document Label Value)
                      deriving (Show, Eq)
 
-foldlWithKey' ::  (a -> k -> v -> a) -> a -> Document k v -> a
+foldlWithKey' ::  (a -> Label -> Value -> a) -> a -> Document -> a
 foldlWithKey' f z (Document doc)= DocImpl.foldlWithKey' f z doc
 
-fromList :: (Hashable k, Ord k) => [(k, a)] -> Document k a
+fromList :: [(Label, Value)] -> Document
 fromList = Document . DocImpl.fromList
 
-size :: (Document k v) -> Int
+size :: Document -> Int
 size (Document doc) = DocImpl.size doc
 
-lookup :: (Eq k, Hashable k) => k -> Document k v -> Maybe v
+lookup :: Label -> Document -> Maybe Value
 lookup k (Document doc) = DocImpl.lookup k doc
 
-lookupDefault :: (Eq k, Hashable k) => v -> k -> Document k v -> v
+lookupDefault :: Value -> Label -> Document -> Value
 lookupDefault v k (Document doc)= DocImpl.lookupDefault v k doc
 
-instance (NFData v, NFData k) => NFData (Document k v) where
+instance NFData Document where
   rnf (Document doc) = rnf doc

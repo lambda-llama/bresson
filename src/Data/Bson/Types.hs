@@ -26,7 +26,7 @@ import Data.Word.Word24 (Word24)
 import Data.Text (Text)
 import Data.UUID (UUID)
 
-import qualified Data.Bson.Document as Doc
+import {-# SOURCE #-} Data.Bson.Document (Document)
 
 
 -- | Options for 'ValueRegex', constructors order is important because
@@ -64,8 +64,6 @@ data Value = ValueDouble {-# UNPACK #-} !Double
 type Label = Text
 type Array = Vector Value
 type Field = (Label, Value)
-
-type Document = Doc.Document Label Value
 
 data ObjectId = ObjectId
     { objectIdTime    :: {-# UNPACK #-} !Word32
