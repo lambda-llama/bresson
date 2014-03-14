@@ -13,19 +13,18 @@ import Data.Word.Word24 (Word24)
 import Data.UUID (UUID, fromWords)
 import Test.QuickCheck (Positive(..), Arbitrary(..), oneof, resize, elements)
 import qualified Data.BitSet.Word as BitSet
-import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Text as T
 import qualified Data.Vector as Vector
 
 import Data.Bson (Document, Value(..), Binary(..),
                   ObjectId(..), Array, RegexOption(..),
-                  RegexOptions)
+                  RegexOptions, fromList)
 
 instance Arbitrary Array where
     arbitrary = fmap Vector.fromList arbitrary
 
 instance Arbitrary Document where
-    arbitrary = fmap HashMap.fromList arbitrary
+    arbitrary = fmap fromList arbitrary
 
 instance Arbitrary S.ByteString where
     arbitrary = S.pack <$> arbitrary

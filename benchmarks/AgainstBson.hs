@@ -82,25 +82,16 @@ decodeBson = runGet Bson.getDocument
 main :: IO ()
 main = do
     !(twitterBytes, twitterBson, twitterBresson) <- go "twitter100.bson"
-    !(auctionBytes, auctionBson, auctionBresson) <- go "auctions.bson"
     defaultMain [ bgroup "bson"
                   [ bgroup "twitter-100"
                     [ bench "encode" $ nf encodeBson twitterBson
                     , bench "decode" $ nf decodeBson twitterBytes
-                    ]
-                  , bgroup "auction"
-                    [ bench "encode" $ nf encodeBson auctionBson
-                    , bench "decode" $ nf decodeBson auctionBytes
                     ]
                   ]
                 , bgroup "bresson"
                   [ bgroup "twitter-100"
                     [ bench "encode" $ nf encodeBresson twitterBresson
                     , bench "decode" $ nf decodeBresson twitterBytes
-                    ]
-                  , bgroup "auction"
-                    [ bench "encode" $ nf encodeBresson auctionBresson
-                    , bench "decode" $ nf decodeBresson auctionBytes
                     ]
                   ]
                 ]
