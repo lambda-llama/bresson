@@ -52,7 +52,6 @@ Library
     Other-modules:
         Data.Bson.Class
         Data.Bson.Document
-        Data.Bson.HashDocument
         Data.Bson.Instances
         Data.Bson.Parser
         Data.Bson.Types

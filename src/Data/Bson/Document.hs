@@ -1,3 +1,5 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+
 module Data.Bson.Document
        (Document
        , fromList
@@ -5,32 +7,31 @@ module Data.Bson.Document
        , size
        , lookup
        , lookupDefault) where
+
 import Prelude hiding (lookup)
 
-import Data.Hashable(Hashable)
 import Control.DeepSeq (NFData(..))
 
-import {-# SOURCE #-} Data.Bson.Types (Label, Value)
-import Data.Bson.Instances ()
-import qualified Data.Bson.HashDocument as DocImpl
+import qualified Data.HashMap.Strict as HashMap
 
-newtype Document = Document DocImpl.Document
-                     deriving (Show, Eq)
+import Data.Bson.Instances ()
+
+import {-# SOURCE #-} Data.Bson.Types (Label, Value)
+
+newtype Document = Document { unDocument :: HashMap.HashMap Label Value }
+    deriving (Eq, Show, NFData)
 
 foldlWithKey' ::  (a -> Label -> Value -> a) -> a -> Document -> a
-foldlWithKey' f z (Document doc)= DocImpl.foldlWithKey' f z doc
+foldlWithKey' f a = HashMap.foldlWithKey' f a . unDocument
 
-fromList :: [(Label, Value)] -> Document
-fromList = Document . DocImpl.fromList
+fromList :: [(Label, Value)] -> Document 
+fromList = Document . HashMap.fromList
 
 size :: Document -> Int
-size (Document doc) = DocImpl.size doc
+size = HashMap.size . unDocument
 
 lookup :: Label -> Document -> Maybe Value
-lookup k (Document doc) = DocImpl.lookup k doc
+lookup k = HashMap.lookup k . unDocument
 
 lookupDefault :: Value -> Label -> Document -> Value
-lookupDefault v k (Document doc)= DocImpl.lookupDefault v k doc
-
-instance NFData Document where
-  rnf (Document doc) = rnf doc
+lookupDefault d k = HashMap.lookupDefault d k . unDocument

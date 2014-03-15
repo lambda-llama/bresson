@@ -6,7 +6,7 @@ import Data.HashMap.Strict (HashMap)
 
 import {-# SOURCE #-} Data.Bson.Types (Label, Value)
 
-newtype Document = Document (HashMap Label Value)
+newtype Document = Document { unDocument :: HashMap Label Value }
 
 instance Eq Document
 instance Show Document
