@@ -14,7 +14,7 @@ import Options.Applicative (ParserInfo, info, execParser, option,
                             long, helper, fullDesc, value,
                             metavar, showDefault, argument, str,
                             showDefaultWith, (<>))
-import Test.QuickCheck (Arbitrary, arbitrary, resize)
+import Test.QuickCheck (arbitrary, resize)
 import Test.QuickCheck.Gen (unGen)
 import qualified Data.ByteString.Lazy as LazyByteString
 
