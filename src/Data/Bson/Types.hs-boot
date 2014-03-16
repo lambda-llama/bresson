@@ -1,6 +1,5 @@
 module Data.Bson.Types where
 
-import Control.DeepSeq (NFData)
 import Data.Text (Text)
 
 type Label = Text
