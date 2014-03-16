@@ -21,11 +21,13 @@ import Data.Word (Word32, Word16)
 import qualified Data.ByteString as S
 
 import Data.BitSet.Word (BitSet)
-import Data.HashMap.Strict (HashMap)
 import Data.Vector (Vector)
 import Data.Word.Word24 (Word24)
 import Data.Text (Text)
 import Data.UUID (UUID)
+
+import {-# SOURCE #-} Data.Bson.Document (Document)
+
 
 -- | Options for 'ValueRegex', constructors order is important because
 -- it's binary representation should be encoded in alphabetical order.
@@ -60,7 +62,6 @@ data Value = ValueDouble {-# UNPACK #-} !Double
     deriving (Eq, Show, Typeable)
 
 type Label = Text
-type Document = HashMap Label Value
 type Array = Vector Value
 type Field = (Label, Value)
 

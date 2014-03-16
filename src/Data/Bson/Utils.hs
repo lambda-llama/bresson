@@ -10,19 +10,19 @@ import Control.Monad (foldM)
 import Prelude hiding (lookup)
 
 import qualified Data.Text as ST
-import qualified Data.HashMap.Strict as HashMap
 
 import Data.Bson.Class (FromBson(..), ToBson(..))
+import qualified Data.Bson.Document as Doc
 import Data.Bson.Instances ()
 import Data.Bson.Parser (Parser)
 import Data.Bson.Types (Label, Document, Field)
 
 document :: [Field] -> Document
-document = HashMap.fromList
+document = Doc.fromList
 {-# INLINE document #-}
 
 lookup :: FromBson a => Label -> Document -> Parser a
-lookup label doc = let mbValue = HashMap.lookup label doc in case mbValue of
+lookup label doc = let mbValue = Doc.lookup label doc in case mbValue of
     Just v -> fromBson v
     Nothing -> fail $ "Key " ++ show label ++ " not found"
 {-# INLINE lookup #-}
