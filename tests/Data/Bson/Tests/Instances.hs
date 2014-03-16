@@ -18,13 +18,13 @@ import qualified Data.Vector as Vector
 
 import Data.Bson (Document, Value(..), Binary(..),
                   ObjectId(..), Array, RegexOption(..),
-                  RegexOptions, fromList)
+                  RegexOptions, document)
 
 instance Arbitrary Array where
     arbitrary = fmap Vector.fromList arbitrary
 
 instance Arbitrary Document where
-    arbitrary = fmap fromList arbitrary
+    arbitrary = fmap document arbitrary
 
 instance Arbitrary S.ByteString where
     arbitrary = S.pack <$> arbitrary
