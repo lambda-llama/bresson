@@ -18,7 +18,7 @@ Tested-with:        GHC == 7.6.*
 Extra-Source-Files: include/*.h
 
 Flag devtools
-    Description: Compile with devtools, that means with benchmark against bson and bsongen utility
+    Description: Compile with devtools, that means with benchmark against bson and bsonparse utility
     Default:     False
 
 Library
@@ -55,9 +55,9 @@ Library
         Data.Bson.Types
         Data.Bson.Utils
 
-Executable bsongen
-    Main-is:          BsonGen.hs
-    Hs-source-dirs:   bin, tests
+Executable bsonparse
+    Main-is:          BsonParse.hs
+    Hs-source-dirs:   bin
     Ghc-options:      -Wall -fno-warn-orphans
     Default-language: Haskell2010
     if !flag(devtools)
@@ -76,10 +76,7 @@ Executable bsongen
       , uuid                       == 1.3.*
       , bresson
 
-      , QuickCheck                 == 2.*
-      , directory                  == 1.2.*
-      , filepath                   == 1.3.*
-      , random                     == 1.0.*
+      , deepseq                    == 1.3.*
       , optparse-applicative       == 0.7.*
 
 Test-suite bresson-tests
