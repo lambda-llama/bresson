@@ -52,7 +52,6 @@ import Data.Text (Text)
 import Data.Text.Lazy.Builder.Int (decimal)
 import Data.Word.Word24 (Word24)
 import qualified Data.BitSet.Word as BitSet
-import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Builder as TL
 import qualified Data.Text.Encoding as TE
@@ -62,6 +61,8 @@ import qualified Data.UUID as UUID
 import Data.Bson.Types (Document, Array, Label, Value(..),
                         Binary(..), ObjectId(..),
                         RegexOption(..), RegexOptions)
+
+import qualified Data.Bson.Document as Doc
 
 instance Binary.Binary Document where
     put = putDocument
@@ -135,7 +136,7 @@ putAsDocument p = do
 {-# INLINE putAsDocument #-}
 
 putDocument :: Document -> Put
-putDocument doc = putAsDocument $ HashMap.foldlWithKey' f (return ()) doc
+putDocument doc = putAsDocument $ Doc.foldlWithKey' f (return ()) doc
   where
     f a k v = a *> putField k v
 {-# INLINE putDocument #-}
@@ -144,7 +145,7 @@ getDocument :: Get Document
 getDocument = do
     l <- fromIntegral <$> getWord32le
     bytes <- getLazyByteString $ l - 4
-    return $ HashMap.fromList $ runGet getFields bytes
+    return $ Doc.fromList $ runGet getFields bytes
  where
     getFields = lookAhead getWord8 >>= \done -> if done == 0
         then return []
@@ -160,11 +161,11 @@ putArray array = putAsDocument $ Vector.zipWithM_ putField inf array
 
 getArray :: Get Array
 getArray = getDocument >>= \doc ->
-    return $ Vector.generate (HashMap.size doc) (f doc)
+    return $ Vector.generate (Doc.size doc) (f doc)
   where
     -- TODO(superbobry): actually, we can switch to
     -- 'fromJust . lookup' and completely ignore invalid BSON.
-    f doc i = HashMap.lookupDefault ValueNull (intToText i) doc
+    f doc i = Doc.lookupDefault ValueNull (intToText i) doc
 {-# INLINE getArray #-}
 
 putBinary :: Binary -> Put
